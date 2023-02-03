@@ -1,5 +1,6 @@
 import requests
 import json
+import posixpath
 from argparse import ArgumentParser
 from urllib.parse import urljoin
 
@@ -24,8 +25,9 @@ def filterWifiNodes():
     """
 
     tags = "?tags=DSL"
+    rq_url = posixpath.join("/api/v2/probes/", tags)
 
-    response = requests.get(urljoin(base_url, "/api/v2/probes/", tags))
+    response = requests.get(urljoin(base_url, rq_url))
     # print(response.json())
 
     with open("probes.json", "w") as file:
