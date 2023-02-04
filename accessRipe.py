@@ -5,6 +5,7 @@ from argparse import ArgumentParser
 from urllib.parse import urljoin
 from collections import defaultdict
 import haversine as hs
+import numpy as np
 
 # --------------------------------------------------------------------------
 # DEFINITIONS
@@ -52,7 +53,7 @@ def filterLocalNodes(input, field, tags):
     """
     Gets the path to the json file containing all nodes. Extracting the nodes matching the list of tags.
     """
-    
+
     filtered_dict = defaultdict(list)
     with open(input, "r") as file:
         nodes = json.load(file)
@@ -135,6 +136,55 @@ def showAvailableTags(args):
 # GEOLOCATION CALCULATIONS
 # --------------------------------------------------------------------------
 
+def findMatchingNodes(baseNodes, possibleNodes):
+    """
+    Expecting two lists of nodes. Matching the two lists to obtain one list of nodes lying within the given threshold range.
+    """
+
+    with open(baseNodes, "r") as input_nodes_base:
+        baseNodes = json.load(input_nodes_base)
+    with open(possibleNodes, "r") as input_nodes_compare:
+        possibleNodes = json.load(input_nodes_compare)
+
+    counter = 0
+    id_list = list()
+    locations = [ (makeGeolocation(node["latitude"], node["longitude"]),node["id"]) for node in possibleNodes["objects"] ]
+    for baseNode in baseNodes["objects"]:
+        location = makeGeolocation(baseNode["latitude"], baseNode["longitude"])
+        for loc,id in locations:
+            if inRange(location, loc):
+                print(f"Found match between: {location} vs. {loc} = {getDistance(location, loc)}")
+                locations.remove((loc,id))
+                counter += 1
+                id_list.append(id)
+
+    print(f"Found {counter} matches")
+    print(id_list)
+
+    # Below matches less
+
+    # counter = 0
+    # id_list = list()
+    # locations = [ makeGeolocation(node["latitude"], node["longitude"]) for node in possibleNodes["objects"] ]
+    # for baseNode in baseNodes["objects"]:
+    #     location = makeGeolocation(baseNode["latitude"], baseNode["longitude"])
+    #     closest = None
+    #     for loc in locations:
+    #         if closest is None and inRange(location, loc):
+    #             closest = loc
+    #         if closest is not None and getDistance(location, loc) < getDistance(location, closest):
+    #             closest = loc
+
+    #     if closest is None:
+    #         # print("No match in range found")
+    #         continue
+
+    #     print(f"Found match between: {location} vs. {closest} = {getDistance(location, closest)}")
+    #     locations.remove(closest)
+    #     counter += 1
+
+    # print(f"Found {counter} matches")
+
 def makeGeolocation(lat,lon):
     """
     Input is the latitude and longitude as strings.
@@ -149,7 +199,7 @@ def getDistance(loc1, loc2):
     Returns the distance between the two points in KM.
     """
 
-    hs.haversine(loc1, loc2)
+    return hs.haversine(loc1, loc2)
 
 def inRange(loc1,loc2):
     """
@@ -181,6 +231,8 @@ if __name__ == '__main__':
     # filterCellular(args)
     # filterWiFi(args)
     # filterLAN(args)
+
+    findMatchingNodes("cellular.json", "wifi.json")
 
 # --------------------------------------------------------------------------
 # END OF MAIN
