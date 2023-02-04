@@ -111,7 +111,8 @@ def filterLAN(args):
     Filtering for LAN nodes and writing these to the given output file.
     """
 
-    filtered = filterLocalNodes(args.input, "tags", ["home","ftth","fibre","cable","dsl","vdsl2","vdsl","adsl","pppoe","google-fiber","fttb-2","fttp-2","fttb"])
+    # Note: 'home' 'dsl' is not necessarily LAN
+    filtered = filterLocalNodes(args.input, "tags", ["ftth","fibre","cable","vdsl2","vdsl","adsl","pppoe","google-fiber","fttb-2","fttp-2","fttb"])
 
     with open(args.output, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
@@ -135,6 +136,100 @@ def showAvailableTags(args):
 # --------------------------------------------------------------------------
 # GEOLOCATION CALCULATIONS
 # --------------------------------------------------------------------------
+
+def findWeirdNodes():
+    with open("cellular.json", "r") as input_nodes_cellular:
+        cellNodes = json.load(input_nodes_cellular)
+    with open("lan.json", "r") as input_nodes_lan:
+        lanNodes = json.load(input_nodes_lan)
+    with open("wifi.json", "r") as input_nodes_wifi:
+        wifiNodes = json.load(input_nodes_wifi)
+
+    nodes0 = cellNodes
+    nodes1 = lanNodes
+    nodes2 = wifiNodes
+
+    filtered_dict = defaultdict(list)
+
+    # find identical nodes in all sets
+    for node0 in nodes0["objects"]:
+        id0 = node0["id"]
+        
+        for node1 in nodes1["objects"]:
+            id1 = node1["id"]
+
+            for node2 in nodes2["objects"]:
+                id2 = node2["id"]
+
+                if id0 == id1 or id0 == id2:
+                    if node0 not in filtered_dict["objects"]:
+                        filtered_dict["objects"].append(node0)
+                elif id1 == id2:
+                    if node1 not in filtered_dict["objects"]:
+                        filtered_dict["objects"].append(node1)
+        
+    print(f"Found {len(filtered_dict['objects'])} nodes with conflictings tags")
+    
+    with open("weird.json", "w") as output_file:
+        json.dump(filtered_dict, output_file, indent=4)
+
+
+def findTripleMatches():
+    with open("cellular.json", "r") as input_nodes_cellular:
+        cellNodes = json.load(input_nodes_cellular)
+    with open("lan.json", "r") as input_nodes_lan:
+        lanNodes = json.load(input_nodes_lan)
+    with open("wifi.json", "r") as input_nodes_wifi:
+        wifiNodes = json.load(input_nodes_wifi)
+
+    # we can try different ordering
+    nodes0 = cellNodes
+    nodes1 = lanNodes
+    nodes2 = wifiNodes
+
+    meassurement_points = list()
+
+    for node0 in nodes0["objects"]:
+        loc0 = makeGeolocation(node0["latitude"], node0["longitude"])
+        
+        # rank all other nodes by distance to node0
+        matches_01 = list()
+        matches_02 = list()
+
+        for node1 in nodes1["objects"]:
+            loc1 = makeGeolocation(node1["latitude"], node1["longitude"])
+            dist01 = getDistance(loc0, loc1)
+            matches_01.append({"id0" : node0["id"], "id1" : node1["id"], "dist" : dist01})
+        
+        for node2 in nodes2["objects"]:
+            loc2 = makeGeolocation(node2["latitude"], node2["longitude"])
+            dist02 = getDistance(loc0, loc2)
+            matches_02.append({"id0" : node0["id"], "id2" : node2["id"], "dist" : dist02})
+        
+        def sortByDist(e):
+            return e['dist']
+
+        matches_01.sort(key=sortByDist)
+        matches_02.sort(key=sortByDist)
+
+        assert(matches_01[0]['id0'] == matches_02[0]['id0']) # sanity check
+
+        # take the closests node from each list
+        meassurement_points.append({
+            'id0' : node0['id'], 
+            'id1' : matches_01[0]['id1'], 
+            'id2' : matches_02[0]['id2'], 
+            'dist01' : matches_01[0]['dist'], 
+            'dist02' : matches_02[0]['dist'], 
+            'dist' : matches_01[0]['dist'] + matches_02[0]['dist']
+            })
+        
+        # We only want the 'best/closest" 100
+        meassurement_points.sort(key=sortByDist)
+    
+    print(f"meassurement_points[0] = {meassurement_points[0]}")
+    print(f"meassurement_points[99] = {meassurement_points[99]}")
+
 
 def combineNodes(args):
 
@@ -243,13 +338,18 @@ if __name__ == '__main__':
     # filterLocalNodes("20230202.json", "connected.json", ["wi-fi", "wireless", "wifi", "WiFi", "WIFI", "wireless-isp"])
 
     # showAvailableTags(args)
-    # filterConnected(args)
 
+    # filterConnected(args)
     # filterCellular(args)
     # filterWiFi(args)
     # filterLAN(args)
 
-    combineNodes(args)
+    # combineNodes(args)
+
+    
+    findWeirdNodes()
+    # findTrippleMatches()
+
 
 # --------------------------------------------------------------------------
 # END OF MAIN
