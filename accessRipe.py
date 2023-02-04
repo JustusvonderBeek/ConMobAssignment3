@@ -51,9 +51,18 @@ def filterLocalNodes(input, field, tags):
     with open(input, "r") as file:
         nodes = json.load(file)
         for elem in nodes["objects"]:
-            for tag in tags:
-                if elem[field] == tag:
-                    filtered_dict["objects"].append(elem)
+            if type(elem[field]) == list:
+                for tag in tags:
+                    if tag in elem[field]:
+                        filtered_dict["objects"].append(elem)
+                        # print("Found matching element")
+                        break
+            else:
+                for tag in tags:
+                    if tag == elem[field]:
+                        filtered_dict["objects"].append(elem)
+                        # print("Found matching element")
+                        break
 
     return filtered_dict
 
@@ -134,6 +143,10 @@ if __name__ == '__main__':
 
     # showAvailableTags(args)
     # filterConnected(args)
+
+    # filterCellular(args)
+    # filterWiFi(args)
+    filterLAN(args)
 
 # --------------------------------------------------------------------------
 # END OF MAIN
