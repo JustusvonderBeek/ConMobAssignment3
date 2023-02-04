@@ -7,6 +7,10 @@ from collections import defaultdict
 
 base_url = "https://atlas.ripe.net"
 
+# --------------------------------------------------------------------------
+# REST API ACCESS
+# --------------------------------------------------------------------------
+
 def filterLanNodes():
     """
     Accessing the RIPE Atlas network and filtering for LAN nodes.
@@ -34,6 +38,10 @@ def filterWifiNodes():
     with open("probes.json", "w") as file:
         json.dump(response.json(), file)
 
+# --------------------------------------------------------------------------
+# END OF REST API ACCESS
+# --------------------------------------------------------------------------
+
 def filterLocalNodes(input, output, field, tags):
     """
     Gets the path to the json file containing all nodes. Extracting the nodes matching the list of tags.
@@ -46,12 +54,6 @@ def filterLocalNodes(input, output, field, tags):
             for tag in tags:
                 if elem[field] == tag:
                     filtered_dict["objects"].append(elem)
-                    # for tag in tags:
-                    #     if tag in elem["tags"]:
-                    #         filtered.append(elem["id"])
-
-    # with open(output, "w") as output_file:
-        # json.dump(filtered_dict, output_file, indent=2)
 
     return filtered_dict
 
@@ -66,6 +68,38 @@ def filterConnected(args):
         json.dump(filtered, output_file)
         print(f"Wrote filtered connected nodes to '{args.output}'")
 
+def filterCellular(args):
+    """
+    Filtering for cellular nodes and writing these to the given output file.
+    """
+
+    filtered = filterLocalNodes(args.input, "cellular.json", "tags", ["Cellular", "cellcom", ])
+
+    with open(args.output, "w") as output_file:
+        json.dump(filtered, output_file)
+        print(f"Wrote filtered connected nodes to '{args.output}'")
+
+
+def showAvailableTags(args):
+    """
+    Reading an input file with connected nodes and printing all available user tags which can be filtered for.
+    """
+
+    filtered_dict = defaultdict(dict)
+    with open(args.input, "r") as input_file:
+        nodes = json.load(input_file)
+        for node in nodes["objects"]:
+            for tag in node["tags"]:
+                filtered_dict[tag] = filtered_dict.get(tag, 0) + 1
+
+    for v in sorted(filtered_dict, key=filtered_dict.get, reverse=True):
+        print(f"{v}:".ljust(32), f"{filtered_dict[v]}")
+
+
+# --------------------------------------------------------------------------
+# MAIN METHOD
+# --------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
 
@@ -77,4 +111,9 @@ if __name__ == '__main__':
     # filterWifiNodes()
     # filterLocalNodes("20230202.json", "connected.json", ["wi-fi", "wireless", "wifi", "WiFi", "WIFI", "wireless-isp"])
 
-    filterConnected(args)
+    # showAvailableTags(args)
+    # filterConnected(args)
+
+# --------------------------------------------------------------------------
+# END OF MAIN
+# --------------------------------------------------------------------------
