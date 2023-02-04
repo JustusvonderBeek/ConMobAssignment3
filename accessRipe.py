@@ -136,15 +136,29 @@ def showAvailableTags(args):
 # GEOLOCATION CALCULATIONS
 # --------------------------------------------------------------------------
 
+def combineNodes(args):
+
+    with open("cellular.json", "r") as input_nodes_base:
+        baseNodes = json.load(input_nodes_base)
+    with open("wifi.json", "r") as input_nodes_compare:
+        possibleNodes = json.load(input_nodes_compare)
+
+    id_list = findMatchingNodes(baseNodes, possibleNodes)
+    filtered = filterLocalNodes("connected.json", "id", id_list)
+    # print(filtered)
+
+    with open("lan.json", "r") as input_nodes_lan:
+        possibleNodes = json.load(input_nodes_lan)
+    id_list = findMatchingNodes(filtered, possibleNodes)
+
+    with open(args.output, "w") as output_file:
+        for id in id_list:
+            output_file.write(str(id) + "\n")
+
 def findMatchingNodes(baseNodes, possibleNodes):
     """
     Expecting two lists of nodes. Matching the two lists to obtain one list of nodes lying within the given threshold range.
     """
-
-    with open(baseNodes, "r") as input_nodes_base:
-        baseNodes = json.load(input_nodes_base)
-    with open(possibleNodes, "r") as input_nodes_compare:
-        possibleNodes = json.load(input_nodes_compare)
 
     counter = 0
     id_list = list()
@@ -153,15 +167,18 @@ def findMatchingNodes(baseNodes, possibleNodes):
         location = makeGeolocation(baseNode["latitude"], baseNode["longitude"])
         for loc,id in locations:
             if inRange(location, loc):
-                print(f"Found match between: {location} vs. {loc} = {getDistance(location, loc)}")
+                # print(f"Found match between: {location} vs. {loc} = {getDistance(location, loc)}")
                 locations.remove((loc,id))
                 counter += 1
                 id_list.append(id)
+                break
 
     print(f"Found {counter} matches")
-    print(id_list)
+    # print(id_list)
 
-    # Below matches less
+    return id_list
+
+    # Below matches less (47)
 
     # counter = 0
     # id_list = list()
@@ -232,7 +249,7 @@ if __name__ == '__main__':
     # filterWiFi(args)
     # filterLAN(args)
 
-    findMatchingNodes("cellular.json", "wifi.json")
+    combineNodes(args)
 
 # --------------------------------------------------------------------------
 # END OF MAIN
