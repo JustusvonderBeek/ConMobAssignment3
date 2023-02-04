@@ -42,7 +42,7 @@ def filterWifiNodes():
 # END OF REST API ACCESS
 # --------------------------------------------------------------------------
 
-def filterLocalNodes(input, output, field, tags):
+def filterLocalNodes(input, field, tags):
     """
     Gets the path to the json file containing all nodes. Extracting the nodes matching the list of tags.
     """
@@ -62,7 +62,7 @@ def filterConnected(args):
     Filtering all nodes for the connected ones and writing these to a special file.
     """
 
-    filtered = filterLocalNodes(args.input, "connected.json", "status_name", ["Connected", "connected"])
+    filtered = filterLocalNodes(args.input, "status_name", ["Connected", "connected"])
 
     with open(args.output, "w") as output_file:
         json.dump(filtered, output_file)
@@ -73,12 +73,33 @@ def filterCellular(args):
     Filtering for cellular nodes and writing these to the given output file.
     """
 
-    filtered = filterLocalNodes(args.input, "cellular.json", "tags", ["Cellular", "cellcom", ])
+    filtered = filterLocalNodes(args.input, "tags", ["lte", "mobile", "5g", "4g", "3g", "t-mobile"])
 
     with open(args.output, "w") as output_file:
         json.dump(filtered, output_file)
         print(f"Wrote filtered connected nodes to '{args.output}'")
 
+def filterWiFi(args):
+    """
+    Filtering for WiFi nodes and writing these to the given output file.
+    """
+
+    filtered = filterLocalNodes(args.input, "tags", ["wi-fi", "wireless", "system-wifi", "fixed-wireless"])
+
+    with open(args.output, "w") as output_file:
+        json.dump(filtered, output_file)
+        print(f"Wrote filtered connected nodes to '{args.output}'")
+
+def filterLAN(args):
+    """
+    Filtering for LAN nodes and writing these to the given output file.
+    """
+
+    filtered = filterLocalNodes(args.input, "tags", ["home","ftth","fibre","cable","dsl","vdsl2","vdsl","adsl","pppoe","google-fiber","fttb-2","fttp-2","fttb"])
+
+    with open(args.output, "w") as output_file:
+        json.dump(filtered, output_file)
+        print(f"Wrote filtered connected nodes to '{args.output}'")
 
 def showAvailableTags(args):
     """
