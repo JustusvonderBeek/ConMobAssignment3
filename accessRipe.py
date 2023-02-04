@@ -4,8 +4,14 @@ import posixpath
 from argparse import ArgumentParser
 from urllib.parse import urljoin
 from collections import defaultdict
+import haversine as hs
+
+# --------------------------------------------------------------------------
+# DEFINITIONS
+# --------------------------------------------------------------------------
 
 base_url = "https://atlas.ripe.net"
+distance_threshold = 100.0 # Distance in kilometers
 
 # --------------------------------------------------------------------------
 # REST API ACCESS
@@ -125,6 +131,34 @@ def showAvailableTags(args):
     for v in sorted(filtered_dict, key=filtered_dict.get, reverse=True):
         print(f"{v}:".ljust(32), f"{filtered_dict[v]}")
 
+# --------------------------------------------------------------------------
+# GEOLOCATION CALCULATIONS
+# --------------------------------------------------------------------------
+
+def makeGeolocation(lat,lon):
+    """
+    Input is the latitude and longitude as strings.
+    Returns the combined location.
+    """
+
+    return (float(lat),float(lon))
+
+def getDistance(loc1, loc2):
+    """
+    Expecting input of two geo-locations as (lat,lon).
+    Returns the distance between the two points in KM.
+    """
+
+    hs.haversine(loc1, loc2)
+
+def inRange(loc1,loc2):
+    """
+    Checking if two geo-locations are within a certain range.
+    Returns true if lower than threshold, false otherwise.
+    """
+
+    return getDistance(loc1, loc2) < distance_threshold
+
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -146,7 +180,7 @@ if __name__ == '__main__':
 
     # filterCellular(args)
     # filterWiFi(args)
-    filterLAN(args)
+    # filterLAN(args)
 
 # --------------------------------------------------------------------------
 # END OF MAIN
