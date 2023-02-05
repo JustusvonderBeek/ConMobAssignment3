@@ -82,6 +82,14 @@ def filterConnected(args):
 
     with open(args.output, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
+        # print(f"Wrote filtered connected nodes to '{args.output}'")
+
+    filtered = filterLocalNodes(args.output, "tags", ["system-ipv6-works", "system-ipv4-works"])
+    nodeCount = len(filtered["objects"])
+    print(f"Nodes matching the filter: {nodeCount}")
+    
+    with open(args.output, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
         print(f"Wrote filtered connected nodes to '{args.output}'")
 
 def filterCellular(args):
@@ -90,10 +98,11 @@ def filterCellular(args):
     """
 
     filtered = filterLocalNodes(args.input, "tags", ["lte", "mobile", "5g", "4g", "3g", "t-mobile"])
-
-    with open(args.output, "w") as output_file:
+    
+    out_filename = "cellular.json"
+    with open(out_filename, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
-        print(f"Wrote filtered connected nodes to '{args.output}'")
+        print(f"Wrote filtered connected nodes to '{out_filename}'")
 
 def filterWiFi(args):
     """
@@ -102,9 +111,10 @@ def filterWiFi(args):
 
     filtered = filterLocalNodes(args.input, "tags", ["wi-fi", "wireless", "system-wifi", "fixed-wireless"])
 
-    with open(args.output, "w") as output_file:
+    out_filename = "wifi.json"
+    with open(out_filename, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
-        print(f"Wrote filtered connected nodes to '{args.output}'")
+        print(f"Wrote filtered connected nodes to '{out_filename}'")
 
 def filterLAN(args):
     """
@@ -114,9 +124,10 @@ def filterLAN(args):
     # Note: 'home' 'dsl' is not necessarily LAN
     filtered = filterLocalNodes(args.input, "tags", ["ftth","fibre","cable","vdsl2","vdsl","adsl","pppoe","google-fiber","fttb-2","fttp-2","fttb"])
 
-    with open(args.output, "w") as output_file:
+    out_filename = "lan.json"
+    with open(out_filename, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
-        print(f"Wrote filtered connected nodes to '{args.output}'")
+        print(f"Wrote filtered connected nodes to '{out_filename}'")
 
 def showAvailableTags(args):
     """
@@ -350,10 +361,9 @@ if __name__ == '__main__':
     # filterWiFi(args)
     # filterLAN(args)
 
-    # combineNodes(args)
-
+    combineNodes(args)
     
-    findWeirdNodes()
+    # findWeirdNodes()
     # findTrippleMatches()
 
 
