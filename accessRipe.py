@@ -1,11 +1,13 @@
 import requests
 import json
 import posixpath
+import haversine as hs
+import numpy as np
+
 from argparse import ArgumentParser
 from urllib.parse import urljoin
 from collections import defaultdict
-import haversine as hs
-import numpy as np
+from tqdm import tqdm
 
 # --------------------------------------------------------------------------
 # DEFINITIONS
@@ -258,12 +260,15 @@ def combineNodes(args):
     _,lan_ids = findMatchingNodes(filtered, possibleNodes)
 
     # Writing to csv
+    print("Resolving Country Code and writing to file...")
     with open(args.output, "w") as output_file:
-        output_file.write("Cellular IDs,Wifi IDs,LAN IDs\n")
-        for i in range(len(cellular_ids)):
+        output_file.write("Cellular IDs,Wifi IDs,LAN IDs,Country\n")
+        for i in tqdm(range(len(cellular_ids))):
             output_file.write(str(cellular_ids[i]) + ",")
             output_file.write(str(wifi_ids[i]) + ",")
-            output_file.write(str(lan_ids[i]) + "\n")
+            output_file.write(str(lan_ids[i]) + ",")
+            country_code = getCountryCode(lan_ids[i])
+            output_file.write(country_code + "\n")
 
 def findMatchingNodes(baseNodes, possibleNodes):
     """
@@ -321,6 +326,20 @@ def makeGeolocation(lat,lon):
     """
 
     return (float(lat),float(lon))
+
+def getCountryCode(id):
+    """
+    Expecting the probe ID from the RIPE Atlas network.
+    Returning the country code.
+    """
+
+    country_code = "Unknown"
+    with open("connected.json", "r") as input_file:
+        probes = json.load(input_file)
+        probes = probes["objects"]
+        country_code = probes[:]["id" == id]["country_code"]
+
+    return country_code
 
 def getDistance(loc1, loc2):
     """
