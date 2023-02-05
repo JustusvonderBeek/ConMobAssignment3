@@ -243,6 +243,37 @@ def findTripleMatches():
     print(f"meassurement_points[0] = {meassurement_points[0]}")
     print(f"meassurement_points[99] = {meassurement_points[99]}")
 
+def combineOnly2Nodes(args):
+    with open("cellular.json", "r") as input_cellular:
+        cellularProbes = json.load(input_cellular)
+    with open("wifi.json", "r") as input_wifi:
+        wifiProbes = json.load(input_wifi)
+    with open("lan.json", "r") as input_lan:
+        lanProbes = json.load(input_lan)
+
+    cellular_ids,lan_ids = findMatchingNodes(cellularProbes, lanProbes)
+    filtered_cellular = filterLocalNodes("connected.json", "id", cellular_ids)
+
+    with open("cellular_test.csv", "w") as output_file:
+        output_file.write("Cellular IDs,LAN IDs,Country\n")
+        country_codes = getCountryCodes(cellular_ids)
+        for i in tqdm(range(len(cellular_ids))):
+            output_file.write(str(cellular_ids[i]) + ",")
+            output_file.write(str(lan_ids[i]) + ",")
+            output_file.write(country_codes[i] + "\n")
+
+    wifi_ids,lan_ids = findMatchingNodes(wifiProbes, lanProbes)
+    filtered_cellular = filterLocalNodes("connected.json", "id", wifi_ids)
+
+    with open("wifi_test.csv", "w") as output_file:
+        output_file.write("WiFi IDs,LAN IDs,Country\n")
+        country_codes = getCountryCodes(wifi_ids)
+        for i in tqdm(range(len(wifi_ids))):
+            output_file.write(str(wifi_ids[i]) + ",")
+            output_file.write(str(lan_ids[i]) + ",")
+            output_file.write(country_codes[i] + "\n")
+    
+    return
 
 def combineNodes(args):
 
@@ -261,14 +292,14 @@ def combineNodes(args):
 
     # Writing to csv
     print("Resolving Country Code and writing to file...")
+    country_codes = getCountryCodes(lan_ids)
     with open(args.output, "w") as output_file:
         output_file.write("Cellular IDs,Wifi IDs,LAN IDs,Country\n")
         for i in tqdm(range(len(cellular_ids))):
             output_file.write(str(cellular_ids[i]) + ",")
             output_file.write(str(wifi_ids[i]) + ",")
             output_file.write(str(lan_ids[i]) + ",")
-            country_code = getCountryCode(lan_ids[i])
-            output_file.write(country_code + "\n")
+            output_file.write(country_codes[i] + "\n")
 
 def findMatchingNodes(baseNodes, possibleNodes):
     """
@@ -328,18 +359,24 @@ def makeGeolocation(lat,lon):
     return (float(lat),float(lon))
 
 def getCountryCode(id):
+
+    return getCountryCodes([id])[0]
+
+def getCountryCodes(id_list):
     """
     Expecting the probe ID from the RIPE Atlas network.
     Returning the country code.
     """
 
-    country_code = "Unknown"
+    country_codes = list()
     with open("connected.json", "r") as input_file:
         probes = json.load(input_file)
         probes = probes["objects"]
-        country_code = probes[:]["id" == id]["country_code"]
+        for id in id_list:
+            country_code = next((node["country_code"] for node in probes if node["id"] == id), "Unknown")
+            country_codes.append(country_code)
 
-    return country_code
+    return country_codes
 
 def getDistance(loc1, loc2):
     """
@@ -380,7 +417,8 @@ if __name__ == '__main__':
     # filterWiFi(args)
     # filterLAN(args)
 
-    combineNodes(args)
+    # combineNodes(args)
+    combineOnly2Nodes(args)
     
     # findWeirdNodes()
     # findTrippleMatches()
