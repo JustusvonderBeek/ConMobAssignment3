@@ -143,17 +143,21 @@ def combineNodes(args):
     with open("wifi.json", "r") as input_nodes_compare:
         possibleNodes = json.load(input_nodes_compare)
 
-    id_list = findMatchingNodes(baseNodes, possibleNodes)
-    filtered = filterLocalNodes("connected.json", "id", id_list)
+    cellular_ids,wifi_ids = findMatchingNodes(baseNodes, possibleNodes)
+    filtered = filterLocalNodes("connected.json", "id", cellular_ids)
     # print(filtered)
 
     with open("lan.json", "r") as input_nodes_lan:
         possibleNodes = json.load(input_nodes_lan)
-    id_list = findMatchingNodes(filtered, possibleNodes)
+    _,lan_ids = findMatchingNodes(filtered, possibleNodes)
 
+    # Writing to csv
     with open(args.output, "w") as output_file:
-        for id in id_list:
-            output_file.write(str(id) + "\n")
+        output_file.write("Cellular IDs,Wifi IDs,LAN IDs\n")
+        for i in range(len(cellular_ids)):
+            output_file.write(str(cellular_ids[i]) + ",")
+            output_file.write(str(wifi_ids[i]) + ",")
+            output_file.write(str(lan_ids[i]) + "\n")
 
 def findMatchingNodes(baseNodes, possibleNodes):
     """
@@ -161,7 +165,8 @@ def findMatchingNodes(baseNodes, possibleNodes):
     """
 
     counter = 0
-    id_list = list()
+    org_id_list = list()
+    matched_id_list = list()
     locations = [ (makeGeolocation(node["latitude"], node["longitude"]),node["id"]) for node in possibleNodes["objects"] ]
     for baseNode in baseNodes["objects"]:
         location = makeGeolocation(baseNode["latitude"], baseNode["longitude"])
@@ -170,13 +175,14 @@ def findMatchingNodes(baseNodes, possibleNodes):
                 # print(f"Found match between: {location} vs. {loc} = {getDistance(location, loc)}")
                 locations.remove((loc,id))
                 counter += 1
-                id_list.append(id)
+                org_id_list.append(baseNode["id"])
+                matched_id_list.append(id)
                 break
 
     print(f"Found {counter} matches")
     # print(id_list)
 
-    return id_list
+    return org_id_list,matched_id_list
 
     # Below matches less (47)
 
