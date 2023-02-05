@@ -22,7 +22,7 @@ def exportToPdf(fig, filename):
     fig.set_figheight(6)
 
     fig.savefig(filename, bbox_inches='tight', format='pdf')
-    print(f"Wrote output to {filename}")
+    print(f"Wrote output to '{filename}'")
 
 # --------------------------------------------------------------------------
 # DATA HANDLING
