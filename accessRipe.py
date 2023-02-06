@@ -203,46 +203,69 @@ def showAvailableTags(args):
     for v in sorted(filtered_dict, key=filtered_dict.get, reverse=True):
         print(f"{v}:".ljust(32), f"{filtered_dict[v]}")
 
-# --------------------------------------------------------------------------
-# GEOLOCATION CALCULATIONS
-# --------------------------------------------------------------------------
 
-def findWeirdNodes():
-    with open("cellular.json", "r") as input_nodes_cellular:
-        cellNodes = json.load(input_nodes_cellular)
-    with open("lan.json", "r") as input_nodes_lan:
-        lanNodes = json.load(input_nodes_lan)
-    with open("wifi.json", "r") as input_nodes_wifi:
-        wifiNodes = json.load(input_nodes_wifi)
+def findConflictingNodes(in_file0, in_file1, out_file):
+    print(f"Searching for conficting nodes between '{in_file0}' and '{in_file1}'.")
 
-    nodes0 = cellNodes
-    nodes1 = lanNodes
-    nodes2 = wifiNodes
+    with open(in_file0, "r") as input_file0:
+        nodes0 = json.load(input_file0)
+    with open(in_file1, "r") as input_file1:
+        nodes1 = json.load(input_file1)
 
     filtered_dict = defaultdict(list)
 
-    # find identical nodes in all sets
+    # find identical nodes in both sets
     for node0 in nodes0["objects"]:
         id0 = node0["id"]
         
         for node1 in nodes1["objects"]:
             id1 = node1["id"]
 
-            for node2 in nodes2["objects"]:
-                id2 = node2["id"]
+            if id0 == id1:
+                if node0 not in filtered_dict["objects"]:
+                    filtered_dict["objects"].append(node0)
 
-                if id0 == id1 or id0 == id2:
-                    if node0 not in filtered_dict["objects"]:
-                        filtered_dict["objects"].append(node0)
-                elif id1 == id2:
-                    if node1 not in filtered_dict["objects"]:
-                        filtered_dict["objects"].append(node1)
+    num_conflicting_nodes = len(filtered_dict['objects'])
+    if num_conflicting_nodes == 0:
+        print(f"Found 0 nodes with conflictings tags.")
+    else:
+        print(f"Found {num_conflicting_nodes} nodes with conflictings tags - saving them to {out_file}")
+        
+        with open(out_file, "w") as output_file:
+            json.dump(filtered_dict, output_file, indent=4)
     
-    print(f"Found {len(filtered_dict['objects'])} nodes with conflictings tags")
-    
-    with open("weird.json", "w") as output_file:
-        json.dump(filtered_dict, output_file, indent=4)
+    return num_conflicting_nodes
 
+
+def filterConflictingNodes(in_file0, in_file1):
+    tmp_file = "conflicting.json"
+    num_conflicting_nodes = findConflictingNodes(in_file0, in_file1, tmp_file)
+
+    if num_conflicting_nodes > 0:
+        conflicting_ids = list()
+
+        with open(tmp_file, "r") as input_file0:
+            nodes0 = json.load(input_file0)
+
+        for node0 in nodes0["objects"]:
+            conflicting_ids.append(node0["id"])
+
+        filtered = filterLocalNodes_negated(in_file0, "id", conflicting_ids)
+        
+        with open(in_file0, "w") as output_file:
+            json.dump(filtered, output_file, indent=4)
+        
+        filtered = filterLocalNodes_negated(in_file1, "id", conflicting_ids)
+        
+        with open(in_file1, "w") as output_file:
+            json.dump(filtered, output_file, indent=4)
+
+        print(f"Removed {num_conflicting_nodes} conflicting nodes from {in_file0} and {in_file1}")
+
+
+# --------------------------------------------------------------------------
+# GEOLOCATION CALCULATIONS
+# --------------------------------------------------------------------------
 
 def findTripleMatches():
     with open("cellular.json", "r") as input_nodes_cellular:
@@ -475,11 +498,17 @@ if __name__ == '__main__':
     # filterLAN("connected.json", "lan.json")
     # filterLAN2("connected.json", "lan.json")
     # filterSatellite("connected.json", "satellite.json")
+    
+    # filterConflictingNodes("lan.json", "wifi.json")
+    # filterConflictingNodes("lan.json", "cellular.json")
+    # filterConflictingNodes("lan.json", "satellite.json")
+    # filterConflictingNodes("wifi.json", "cellular.json")
+    # filterConflictingNodes("wifi.json", "satellite.json")
+    # filterConflictingNodes("cellular.json", "satellite.json")
 
     # combineNodes(args)
     # combineOnly2Nodes(args)
-    
-    # findWeirdNodes()
+
     # findTrippleMatches()
 
 
