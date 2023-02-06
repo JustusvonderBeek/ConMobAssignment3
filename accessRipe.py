@@ -13,6 +13,7 @@ from tqdm import tqdm
 # DEFINITIONS
 # --------------------------------------------------------------------------
 
+NoneType = type(None)
 base_url = "https://atlas.ripe.net"
 distance_threshold = 100.0 # Distance in kilometers
 
@@ -75,6 +76,7 @@ def filterLocalNodes(input, field, tags):
 
     return filtered_dict
 
+
 def filterLocalNodes_negated(input, field, tags):
     """
     Gets the path to the json file containing all nodes. Extracting the nodes NOT matching the list of tags.
@@ -104,6 +106,26 @@ def filterLocalNodes_negated(input, field, tags):
     return filtered_dict
 
 
+def filterInvalidNodes(in_file, out_file):
+    print(f"Filtering 'invalid' nodes from '{in_file}' to '{out_file}'.")
+    filtered = defaultdict(list)
+
+    with open(in_file, "r") as input_file:
+        nodes = json.load(input_file)
+        for elem in nodes["objects"]:
+
+            # longitude and latitude must be valid
+            if type(elem["latitude"]) == NoneType or type(elem["longitude"]) == NoneType:
+                continue
+
+            filtered["objects"].append(elem)
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    print(f"Nodes matching the filter: {len(filtered['objects'])}")
+
+
 def filterConnected(in_file, out_file):
     print(f"Filtering 'connected and working' nodes from '{in_file}' to '{out_file}'.")
 
@@ -125,6 +147,15 @@ def filterConnected(in_file, out_file):
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
     
+    # Filter "actual GPS location"
+    # NoneType = type(None)
+    # # if type(lat) == NoneType or type(lon) == NoneType:
+    # #     print("fuck")
+    # filtered = filterLocalNodes_negated(out_file, "latitude", NoneType)
+    
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
     print(f"Nodes matching the filter: {len(filtered['objects'])}")
 
 
@@ -267,18 +298,13 @@ def filterConflictingNodes(in_file0, in_file1):
 # GEOLOCATION CALCULATIONS
 # --------------------------------------------------------------------------
 
-def findTripleMatches():
-    with open("cellular.json", "r") as input_nodes_cellular:
-        cellNodes = json.load(input_nodes_cellular)
-    with open("lan.json", "r") as input_nodes_lan:
-        lanNodes = json.load(input_nodes_lan)
-    with open("wifi.json", "r") as input_nodes_wifi:
-        wifiNodes = json.load(input_nodes_wifi)
-
-    # we can try different ordering
-    nodes0 = cellNodes
-    nodes1 = lanNodes
-    nodes2 = wifiNodes
+def findTripleMatches(in_file0, in_file1, in_file2):
+    with open(in_file0, "r") as input_file0:
+        nodes0 = json.load(input_file0)
+    with open(in_file1, "r") as input_file1:
+        nodes1 = json.load(input_file1)
+    with open(in_file2, "r") as input_file2:
+        nodes2 = json.load(input_file2)
 
     meassurement_points = list()
 
@@ -320,8 +346,7 @@ def findTripleMatches():
         # We only want the 'best/closest" 100
         meassurement_points.sort(key=sortByDist)
     
-    print(f"meassurement_points[0] = {meassurement_points[0]}")
-    print(f"meassurement_points[99] = {meassurement_points[99]}")
+    return meassurement_points
 
 def combineOnly2Nodes(args):
     with open("cellular.json", "r") as input_cellular:
@@ -493,6 +518,7 @@ if __name__ == '__main__':
     # showAvailableTags(args)
 
     # filterConnected("20230204.json", "connected.json")
+    # filterInvalidNodes("connected.json", "connected.json")
     # filterCellular("connected.json", "cellular.json")
     # filterWiFi("connected.json", "wifi.json")
     # filterLAN("connected.json", "lan.json")
@@ -509,8 +535,13 @@ if __name__ == '__main__':
     # combineNodes(args)
     # combineOnly2Nodes(args)
 
-    # findTrippleMatches()
+    meassurement_points = findTripleMatches("lan.json", "wifi.json", "cellular.json")
+    # meassurement_points = findTripleMatches("wifi.json", "lan.json", "cellular.json")
 
+    if len(meassurement_points) > 0:
+        print(f"meassurement_points[0] = {meassurement_points[0]}")
+        last = min(len(meassurement_points) - 1, 99)
+        print(f"meassurement_points[{last}] = {meassurement_points[last]}")
 
 # --------------------------------------------------------------------------
 # END OF MAIN
