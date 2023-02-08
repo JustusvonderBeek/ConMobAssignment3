@@ -17,6 +17,9 @@ NoneType = type(None)
 base_url = "https://atlas.ripe.net"
 distance_threshold = 100.0 # Distance in kilometers
 
+cellular_tags = ["lte", "5g", "4g", "3g"]
+wifi_tags = ["wifi", "wi-fi", "wireless", "system-wifi", "fixed-wireless"]
+
 # --------------------------------------------------------------------------
 # REST API ACCESS
 # --------------------------------------------------------------------------
@@ -141,11 +144,11 @@ def filterConnected(in_file, out_file):
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
     
-    # Filter "DNS works"
-    filtered = filterLocalNodes(out_file, "tags", ["system-resolves-aaaa-correctly", "system-resolves-a-correctly"])
+    # # Filter "DNS works"
+    # filtered = filterLocalNodes(out_file, "tags", ["system-resolves-aaaa-correctly", "system-resolves-a-correctly"])
     
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
+    # with open(out_file, "w") as output_file:
+    #     json.dump(filtered, output_file, indent=4)
     
     # Filter "actual GPS location"
     # NoneType = type(None)
@@ -162,7 +165,7 @@ def filterConnected(in_file, out_file):
 def filterCellular(in_file, out_file):
     print(f"Filtering 'cellular' nodes from '{in_file}' to '{out_file}'.")
 
-    filtered = filterLocalNodes(in_file, "tags", ["lte", "mobile", "5g", "4g", "3g", "t-mobile"])
+    filtered = filterLocalNodes(in_file, "tags", cellular_tags)
     
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
@@ -173,7 +176,7 @@ def filterCellular(in_file, out_file):
 def filterWiFi(in_file, out_file):
     print(f"Filtering 'WiFi' nodes from '{in_file}' to '{out_file}'.")
 
-    filtered = filterLocalNodes(in_file, "tags", ["wifi", "wi-fi", "wireless", "system-wifi", "fixed-wireless"])
+    filtered = filterLocalNodes(in_file, "tags", wifi_tags)
 
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
@@ -184,29 +187,32 @@ def filterWiFi(in_file, out_file):
 def filterSatellite(in_file, out_file):
     print(f"Filtering 'satellite' nodes from '{in_file}' to '{out_file}'.")
 
-    filtered = filterLocalNodes(in_file, "asn_v4", [14593])
+    filtered_v4 = filterLocalNodes(in_file, "asn_v4", [14593])
+    filtered_v6 = filterLocalNodes(in_file, "asn_v6", [14593])
+
+    filtered_dict = defaultdict(list)
+    for elem in filtered_v4["objects"]:
+        filtered_dict["objects"].append(elem)
+
+    for elem in filtered_v6["objects"]:
+        if not elem in filtered_dict["objects"]:
+            filtered_dict["objects"].append(elem)
 
     with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
+        json.dump(filtered_dict, output_file, indent=4)
 
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
+    print(f"Nodes matching the filter: {len(filtered_dict['objects'])}")
 
 
 def filterLAN(in_file, out_file):
-    print(f"Filtering 'lan' nodes from '{in_file}' to '{out_file}'.")
+    print(f"Filtering 'lan (home and NOT wifi,cellular,satellite,isp,...)' nodes from '{in_file}' to '{out_file}'.")
 
-    filtered = filterLocalNodes(in_file, "tags", ["home", "dsl", "ftth", "fibre", "cable", "vdsl2", "vdsl", "adsl", "pppoe", "google-fiber", "fttb-2", "fttp-2", "fttb"])
+    filtered = filterLocalNodes(in_file, "tags", ["home"])
 
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
-        
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
 
-
-def filterLAN2(in_file, out_file):
-    print(f"Filtering 'lan (all NOT wifi,cellular,satellite)' nodes from '{in_file}' to '{out_file}'.")
-
-    filtered = filterLocalNodes_negated(in_file, "tags", ["lte", "mobile", "5g", "4g", "3g", "t-mobile", "wi-fi", "wireless", "system-wifi", "fixed-wireless", "satellite", "starlink"])
+    filtered = filterLocalNodes_negated(out_file, "tags", ["gcs", "aws", "wireless-isp", "isp", "data-center", "datacenter", "datacentre", "satellite", "starlink"] + wifi_tags + cellular_tags)
 
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
@@ -298,7 +304,48 @@ def filterConflictingNodes(in_file0, in_file1):
 # GEOLOCATION CALCULATIONS
 # --------------------------------------------------------------------------
 
+
+def findDoubleMatches(in_file0, in_file1):
+    print(f"Searching for double matches between {in_file0} and {in_file1}")
+
+    with open(in_file0, "r") as input_file0:
+        nodes0 = json.load(input_file0)
+    with open(in_file1, "r") as input_file1:
+        nodes1 = json.load(input_file1)
+
+    meassurement_points = list()
+
+    for node0 in tqdm(nodes0["objects"]):
+        loc0 = makeGeolocation(node0["latitude"], node0["longitude"])
+        
+        # rank all other nodes by distance to node0
+        matches_01 = list()
+
+        for node1 in nodes1["objects"]:
+            loc1 = makeGeolocation(node1["latitude"], node1["longitude"])
+            dist01 = getDistance(loc0, loc1)
+            matches_01.append({"id0" : node0["id"], "id1" : node1["id"], "dist" : dist01})
+        
+        def sortByDist(e):
+            return e['dist']
+
+        matches_01.sort(key=sortByDist)
+
+        # take the closests node from each list
+        meassurement_points.append({
+            'id0' : node0['id'], 
+            'id1' : matches_01[0]['id1'], 
+            'dist' : matches_01[0]['dist'], 
+            })
+        
+        # We only want the 'best/closest" 100
+        meassurement_points.sort(key=sortByDist)
+    
+    return meassurement_points
+
 def findTripleMatches(in_file0, in_file1, in_file2):
+    print(f"Searching for triple matches between {in_file0}, {in_file1} and {in_file2}")
+
     with open(in_file0, "r") as input_file0:
         nodes0 = json.load(input_file0)
     with open(in_file1, "r") as input_file1:
@@ -308,7 +355,7 @@ def findTripleMatches(in_file0, in_file1, in_file2):
 
     meassurement_points = list()
 
-    for node0 in nodes0["objects"]:
+    for node0 in tqdm(nodes0["objects"]):
         loc0 = makeGeolocation(node0["latitude"], node0["longitude"])
         
         # rank all other nodes by distance to node0
@@ -483,6 +530,26 @@ def getCountryCodes(id_list):
 
     return country_codes
 
+def sortByCountryCodes(id_list):
+    """
+    Expecting the probe ID from the RIPE Atlas network.
+    Returning the country code.
+    """
+
+    country_dict = defaultdict(list)
+    with open("connected.json", "r") as input_file:
+        probes = json.load(input_file)
+        probes = probes["objects"]
+        for id in id_list:
+            country_code = next((node["country_code"] for node in probes if node["id"] == id), "Unknown")
+            
+            if country_code in country_dict:
+                country_dict[country_code].append(id)
+            else:
+                country_dict[country_code] = [id]
+
+    return country_dict
+
 def getDistance(loc1, loc2):
     """
     Expecting input of two geo-locations as (lat,lon).
@@ -499,6 +566,88 @@ def inRange(loc1,loc2):
 
     return getDistance(loc1, loc2) < distance_threshold
 
+
+def getMeassurementPoints(in_file0, in_file1):
+    meassurement_points = findDoubleMatches(in_file0, in_file1)
+
+    # print all points
+    counter = 0
+    for elem in meassurement_points:
+        print(f"[{counter}] {elem}")
+        counter+=1
+
+    id_list0 = list()
+    id_list1 = list()
+    for elem in meassurement_points:
+        if elem["id0"] not in id_list0:
+            id_list0.append(elem["id0"])
+        if elem["id1"] not in id_list1:
+            id_list1.append(elem["id1"])
+
+    # print(f"# ids from {in_file0} = {len(id_list0)}")
+    # print(f"# ids from {in_file1} = {len(id_list1)}")
+
+    return (id_list0, id_list1)
+
+def sortByContinent(country_id_list0, country_id_list1, country_id_list2, country_id_list3):
+    continent_dict = defaultdict(list)
+    continent_dict["EU"] = []
+    continent_dict["NA"] = []
+    continent_dict["SA"] = []
+    continent_dict["AS"] = []
+    continent_dict["AF"] = []
+    continent_dict["OC"] = []
+    continent_dict["middle_east"] = []
+
+    eu_countries = ["DE", "BE", "NL", "AT", "ES", "FR", "IT", "GB", "PL", "CZ", "CH", "RU", "FI", "RS", "IL", "SE", "UA", "TR", "AZ", "IE", "DK", "EE", "LV", "SI", "NO", "BG", "GR", "RO", "CY"]
+    us_countries = ["US", "CA"]
+    sa_countries = ["BR", "VE", "CO"]
+    asia_countries = ["SG", "CN", "MY", "JP", "HK", "MN"]
+    oc_countries = ["AU", "NZ", "ID"]
+    af_countries = ["NA", "AO", "RE", "TN", "ZA", "UG"]
+    middle_east = ["IN", "IR", "UZ", "PK", "KZ", "IQ", "TJ", "AE"]
+
+
+    def match_continent(country, id_list):
+        if country in eu_countries:
+            continent_dict["EU"] += id_list
+        elif country in us_countries:
+            continent_dict["NA"] += id_list
+        elif country in sa_countries:
+            continent_dict["SA"] += id_list
+        elif country in asia_countries:
+            continent_dict["AS"] += id_list
+        elif country in oc_countries:
+            continent_dict["OC"] += id_list
+        elif country in af_countries:
+            continent_dict["AF"] += id_list
+        elif country in middle_east:
+            continent_dict["middle_east"] += id_list
+        else:
+            print(f"[{country}]: ({len(id_list)}) {id_list}")
+            continent_dict["Ping"] += id_list
+
+    for country, id_list in country_id_list0.items():
+        match_continent(country, id_list)
+
+    for country, id_list in country_id_list1.items():
+        match_continent(country, id_list)
+
+    for country, id_list in country_id_list2.items():
+        match_continent(country, id_list)
+
+    for country, id_list in country_id_list3.items():
+        match_continent(country, id_list)
+
+    # print(f"[EU]: {len(continent_dict['EU'])}")
+    # print(f"[NA]: {len(continent_dict['NA'])}")
+    # print(f"[SA]: {len(continent_dict['SA'])}")
+    # print(f"[AS]: {len(continent_dict['AS'])}")
+    # print(f"[OC]: {len(continent_dict['OC'])}")
+    # print(f"[AF]: {len(continent_dict['AF'])}")
+    # print(f"[middle_east]: {len(continent_dict['middle_east'])}")
+
+    return continent_dict
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -522,7 +671,6 @@ if __name__ == '__main__':
     # filterCellular("connected.json", "cellular.json")
     # filterWiFi("connected.json", "wifi.json")
     # filterLAN("connected.json", "lan.json")
-    # filterLAN2("connected.json", "lan.json")
     # filterSatellite("connected.json", "satellite.json")
     
     # filterConflictingNodes("lan.json", "wifi.json")
@@ -535,13 +683,86 @@ if __name__ == '__main__':
     # combineNodes(args)
     # combineOnly2Nodes(args)
 
-    meassurement_points = findTripleMatches("lan.json", "wifi.json", "cellular.json")
+    # meassurement_points = findTripleMatches("lan.json", "wifi.json", "cellular.json")
     # meassurement_points = findTripleMatches("wifi.json", "lan.json", "cellular.json")
+    # meassurement_points = findTripleMatches("cellular.json", "wifi.json", "lan.json")
 
-    if len(meassurement_points) > 0:
-        print(f"meassurement_points[0] = {meassurement_points[0]}")
-        last = min(len(meassurement_points) - 1, 99)
-        print(f"meassurement_points[{last}] = {meassurement_points[last]}")
+    (wifi_ids, wifi_lan_ids) = getMeassurementPoints("wifi.json", "lan.json")
+    (cellular_ids, cell_lan_ids) = getMeassurementPoints("cellular.json", "lan.json")
+
+    # deduplicate all lan ids
+    lan_ids = list()
+    for id in wifi_lan_ids:
+            lan_ids.append(id)
+    for id in cell_lan_ids:
+        if id not in lan_ids:
+            lan_ids.append(id)
+    
+    # print(f"# unique lan_ids = {len(lan_ids)}")
+
+    satellite_ids = list()
+    with open("satellite.json", "r") as file:
+        nodes = json.load(file)
+        # print(f"# satellites = {len(nodes['objects'])}")
+        for elem in nodes["objects"]:
+            satellite_ids.append(elem["id"])
+        # print(satellite_ids)
+
+    country_satellite_ids = sortByCountryCodes(satellite_ids)
+    # for k,v in id_country.items():
+    #     print(f"[{k}]: ({len(v)}) {v}")
+    
+    country_wifi_ids = sortByCountryCodes(wifi_ids)
+    # for k,v in id_country.items():
+    #     print(f"[{k}]: ({len(v)}) {v}")
+
+    country_cellular_ids = sortByCountryCodes(cellular_ids)
+    # for k,v in id_country.items():
+    #     print(f"[{k}]: ({len(v)}) {v}")
+
+    country_lan_ids = sortByCountryCodes(lan_ids)
+    # for k,v in id_country.items():
+    #     print(f"[{k}]: ({len(v)}) {v}")
+
+
+    continent_ids = sortByContinent(country_satellite_ids, country_wifi_ids, country_cellular_ids, country_lan_ids)
+
+
+    continent_ipv4 = defaultdict(list)
+    continent_ipv6 = defaultdict(list)
+    with open("connected.json", "r") as input_file:
+        probes = json.load(input_file)
+        probes = probes["objects"]
+        for continent in continent_ids:
+            for id in continent_ids[continent]:
+                tags = next((node["tags"] for node in probes if node["id"] == id), [])
+                if "system-ipv4-works" in tags:
+                    continent_ipv4[continent].append(id)
+                    continue
+                if "system-ipv6-works" in tags:
+                    continent_ipv6[continent].append(id)
+                    continue
+                # else
+                print(f"Something is sus")
+                exit(42)
+
+
+    print(f"[EU]: {len(continent_ipv4['EU'])}")
+    print(f"[NA]: {len(continent_ipv4['NA'])}")
+    print(f"[SA]: {len(continent_ipv4['SA'])}")
+    print(f"[AS]: {len(continent_ipv4['AS'])}")
+    print(f"[OC]: {len(continent_ipv4['OC'])}")
+    print(f"[AF]: {len(continent_ipv4['AF'])}")
+    print(f"[middle_east]: {len(continent_ipv4['middle_east'])}")
+
+
+    print(f"[EU]: {len(continent_ipv6['EU'])}")
+    print(f"[NA]: {len(continent_ipv6['NA'])}")
+    print(f"[SA]: {len(continent_ipv6['SA'])}")
+    print(f"[AS]: {len(continent_ipv6['AS'])}")
+    print(f"[OC]: {len(continent_ipv6['OC'])}")
+    print(f"[AF]: {len(continent_ipv6['AF'])}")
+    print(f"[middle_east]: {len(continent_ipv6['middle_east'])}")
 
 # --------------------------------------------------------------------------
 # END OF MAIN
