@@ -44,7 +44,7 @@ def calculatePing():
 def calculateTraceroute():
     total_probes = eu + na + sa + _as + af + oc + me
     intra_cont = total_probes * datacenters * traceroute_cost 
-    inter_cont = total_probes * other_continents * datacenters * traceroute_cost
+    inter_cont = total_probes * other_continents * traceroute_cost
     total = inter_cont + intra_cont
 
     print("TRACEROUTE:")
