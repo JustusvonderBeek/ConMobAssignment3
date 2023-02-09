@@ -23,7 +23,7 @@ distance_threshold = 100.0 # Distance in kilometers
 cellular_tags = ["lte", "5g", "4g", "3g"]
 wifi_tags = ["wifi", "wi-fi", "wireless", "system-wifi", "fixed-wireless"]
 
-
+default_measurement_script = "measurements.sh"
 
 # --------------------------------------------------------------------------
 # PROBE FILTERING
@@ -619,8 +619,8 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
     sa_countries = ["BR", "VE", "CO"]
     asia_countries = ["SG", "CN", "MY", "JP", "HK", "MN"]
     oc_countries = ["AU", "NZ", "ID"]
-    af_countries = ["NA", "AO", "RE", "TN", "ZA", "UG"]
-    middle_east = ["IN", "IR", "UZ", "PK", "KZ", "IQ", "TJ", "AE"]
+    af_countries = ["NA", "AO", "RE", "TN", "ZA", "UG", "BJ"]
+    middle_east = ["IN", "IR", "UZ", "PK", "KZ", "IQ", "TJ", "AE", "JO"]
 
 
     def match_continent(country, id_list):
@@ -692,7 +692,7 @@ ping_template = """{
 trace_template = """{
     "definitions": [
         {
-            "target": TARGET_STRING,
+            "target": "TARGET_STRING",
             "af": 4,
             "response_timeout": 4000,
             "description": "CMB Group 9",
@@ -713,9 +713,9 @@ trace_template = """{
     ],
     "probes": [
         {
-            "value": PROBES_CSV_STRING,
+            "value": "PROBES_CSV_STRING",
             "type": "probes",
-            "requested": PROBES_COUNT
+            "requested": "PROBES_COUNT"
         }
     ],
     "is_oneoff": false,
@@ -726,7 +726,7 @@ trace_template = """{
 
 curl_template = """curl --dump-header - -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d '{}' https://atlas.ripe.net/api/v2/measurements//?key=f9a735fa-c429-409d-b028-1050a3ee840b"""
 
-def create_meassurements():
+def create_measurements(output_file):
     continent_matching = defaultdict(list)
     continent_matching["EU"]=["NA", "AF", "AS", "ME"]
     continent_matching["NA"]=["EU", "SA", "AS", "OC"]
@@ -736,28 +736,30 @@ def create_meassurements():
     continent_matching["ME"]=["EU", "AF", "OC"]
     continent_matching["OC"]=["NA", "SA", "ME", "AS"]
 
-
-    output = open("ping_measure.sh", "a")
+    # Flash the file content
+    open(output_file, "w").close()
+    
+    output = open(output_file, "w")
 
     output.write("#!/bin/bash\n\n")
     
-    def add_curl_command(source, dest, dest_count):
+    def add_curl_command(source, dest, dest_count, template):
         datacenter = pd.read_csv("datacenters.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
         ids = pd.read_csv("continent_v4.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
 
-        ping = json.loads(ping_template)
-        ping["definitions"][0]["target"] = list(datacenter[datacenter["Continent"] == dest]["IP"])[dest_count]
+        command = json.loads(template)
+        command["definitions"][0]["target"] = list(datacenter[datacenter["Continent"] == dest]["IP"])[dest_count]
         
         for index,row in ids.iterrows():
             if row["Continent"] == source:
                 id_list = ast.literal_eval(row["IDs"])
-                ping["probes"][0]["value"] = str(id_list)[1:-1]
+                command["probes"][0]["value"] = str(id_list)[1:-1]
                 break
 
-        ping["probes"][0]["requested"] = int( ids[ids["Continent"] == source]["Elements"])
+        command["probes"][0]["requested"] = int( ids[ids["Continent"] == source]["Elements"])
 
-        ping_config = json.dumps(ping)
-        curl_command = curl_template.replace("""{}""", ping_config)
+        command_config = json.dumps(command)
+        curl_command = curl_template.replace("{}", command_config)
         output.write(curl_command + "\n")
 
 
@@ -772,14 +774,38 @@ def create_meassurements():
             end = 3
         # print(end)
         for i in range(end):
-            add_curl_command(k, k, i)
+            add_curl_command(k, k, i, ping_template)
 
     # inter-continental pings
     output.write("\n\n# Inter Continental Pings: \n")
 
     for k,v in tqdm(continent_matching.items()):
         for dest in v:
-            add_curl_command(k, dest, 0)
+            add_curl_command(k, dest, 0, ping_template)
+
+    # Traceroute
+    print("TRACEROUTE")
+
+    output.write("\n\n# Traceroutes: \n")
+
+    # intra-continental traceroutes
+    output.write("# Intra Continental Traceroute: \n")
+    for k,v in tqdm(continent_matching.items()):
+        print(f"Source: {k}  Dest: {k}")
+        if k == "AF":
+            end = 2
+        else:
+            end = 3
+        # print(end)
+        for i in range(end):
+            add_curl_command(k, k, i, trace_template)
+
+    # inter-continental traceroutes
+    output.write("\n\n# Inter Continental Traceroute: \n")
+
+    for k,v in tqdm(continent_matching.items()):
+        for dest in v:
+            add_curl_command(k, dest, 0, trace_template)
 
     output.close()
 
@@ -792,7 +818,7 @@ def create_meassurements():
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230204.json")
+    parser.add_argument('-i', '--input', type=str, default="20230208.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
     parser.add_argument('-t', '--tags', action="store_true", help="Printing all available user-tags and exit.")
     parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
@@ -851,7 +877,7 @@ if __name__ == '__main__':
         writeDictToFile(continent_ipv4, "continent_v4.csv")
         writeDictToFile(continent_ipv6, "continent_v6.csv")
 
-    create_meassurements()
+    create_measurements(default_measurement_script)
 
 # --------------------------------------------------------------------------
 # END OF MAIN
