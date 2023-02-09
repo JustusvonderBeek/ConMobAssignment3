@@ -2,9 +2,9 @@ Continent,Location,Datacenter,IP
 EU,Frankfurt am Main,eu-central-1.ec2.cloudharmony.net,3.67.117.167
 EU,Frankfurt am Main,europe-west3.gce.cloudharmony.net,34.159.150.238
 EU,Frankfurt am Main,germany-westcentral.azure.cloudharmony.net,20.113.132.119
-,Council Bluffs,us-central1.gce.cloudharmony.net,34.132.159.233
-,Des Moines,us-central.azure.cloudharmony.net,104.43.249.147
-,Columbus,us-east-2b.ec2.cloudharmony.net,18.221.48.14
+NA,Council Bluffs,us-central1.gce.cloudharmony.net,34.132.159.233
+NA,Des Moines,us-central.azure.cloudharmony.net,104.43.249.147
+NA,Columbus,us-east-2b.ec2.cloudharmony.net,18.221.48.14
 SA,Sao Paolo,sa-east-1.ec2.cloudharmony.net,177.71.249.31
 SA,Sao Paolo,southamerica-east1.gce.cloudharmony.net,34.151.208.71
 SA,Campinas,brazil-south.azure.cloudharmony.net,20.197.194.186
