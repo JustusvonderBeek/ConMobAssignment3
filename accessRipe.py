@@ -178,7 +178,7 @@ def filterConnected(in_file, out_file):
         json.dump(filtered, output_file, indent=4)
 
     # Filter "IP works"
-    filtered = filterLocalNodes(out_file, "tags", ["system-ipv6-works", "system-ipv4-works"])
+    filtered = filterLocalNodes(out_file, "tags", ["system-ipv4-works"]) #["system-ipv6-works", "system-ipv4-works"])
 
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
@@ -652,6 +652,90 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
         match_continent(country, id_list)
 
     return continent_dict
+
+
+# --------------------------------------------------------------------------
+# MEASSUREMENT FUNCTIONS
+# --------------------------------------------------------------------------
+
+ping_template = """{
+    "definitions": [
+        {
+            "target": TARGET_STRING,
+            "af": 4,
+            "packets": 3,
+            "size": 48,
+            "description": "CMB Group 9",
+            "interval": 7200,
+            "resolve_on_probe": false,
+            "skip_dns_check": false,
+            "include_probe_id": false,
+            "type": "ping"
+        }
+    ],
+    "probes": [
+        {
+            "value": PROBES_CSV_STRING,
+            "type": "probes",
+            "requested": PROBES_COUNT
+        }
+    ],
+    "is_oneoff": false,
+    "bill_to": "wagnerc@in.tum.de",
+    "stop_time": 1676850900
+}
+"""
+
+trace_template = """{
+    "definitions": [
+        {
+            "target": TARGET_STRING,
+            "af": 4,
+            "response_timeout": 4000,
+            "description": "CMB Group 9",
+            "protocol": "ICMP",
+            "interval": 756000,
+            "resolve_on_probe": false,
+            "packets": 3,
+            "size": 48,
+            "first_hop": 1,
+            "max_hops": 32,
+            "paris": 16,
+            "destination_option_size": 0,
+            "hop_by_hop_option_size": 0,
+            "dont_fragment": false,
+            "skip_dns_check": false,
+            "type": "traceroute"
+        }
+    ],
+    "probes": [
+        {
+            "value": PROBES_CSV_STRING,
+            "type": "probes",
+            "requested": PROBES_COUNT
+        }
+    ],
+    "is_oneoff": false,
+    "bill_to": "wagnerc@in.tum.de",
+    "stop_time": 1676850900
+}
+"""
+
+def create_meassurments():
+    # intra-continetal pings
+
+
+    # inter-continetal pings
+    continent_matching = defaultdict(list)
+    continent_matching["EU"]=["NA", "AF", "AS", "ME"]
+    continent_matching["NA"]=["EU", "SA", "AS", "OC"]
+    continent_matching["SA"]=["NA", "AF", "AS", "OC"]
+    continent_matching["AF"]=["EU", "SA", "ME"]
+    continent_matching["AS"]=["EU", "NA", "SA", "OC"]
+    continent_matching["ME"]=["EU", "AF", "OC"]
+    continent_matching["OC"]=["NA", "SA", "ME", "AS"]
+
+
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
