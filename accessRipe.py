@@ -13,51 +13,27 @@ from tqdm import tqdm
 # DEFINITIONS
 # --------------------------------------------------------------------------
 
-NoneType = type(None)
 base_url = "https://atlas.ripe.net"
 distance_threshold = 100.0 # Distance in kilometers
 
 cellular_tags = ["lte", "5g", "4g", "3g"]
 wifi_tags = ["wifi", "wi-fi", "wireless", "system-wifi", "fixed-wireless"]
 
-# --------------------------------------------------------------------------
-# REST API ACCESS
-# --------------------------------------------------------------------------
 
-def filterLanNodes():
-    """
-    Accessing the RIPE Atlas network and filtering for LAN nodes.
-    """
-
-    tags = "?tags=dsl,cable,lan,fibre,vdsl,vdsl2"
-
-    response = requests.get(urljoin(base_url, "/api/v2/probes/"))
-    print(response.json())
-
-    with open("lan_probes.json", "w") as file:
-        json.dump(response.json(), file, indent=4)
-
-def filterWifiNodes():
-    """
-    Accessing the RIPE Atlas network and filtering for WiFi nodes.
-    """
-
-    tags = "?tags=DSL"
-    rq_url = posixpath.join("/api/v2/probes/", tags)
-
-    response = requests.get(urljoin(base_url, rq_url))
-    # print(response.json())
-
-    with open("probes.json", "w") as file:
-        json.dump(response.json(), file, indent=4)
 
 # --------------------------------------------------------------------------
-# END OF REST API ACCESS
+# PROBE FILTERING
 # --------------------------------------------------------------------------
 
 def filterLocalNodes(input, field, tags):
     """
-    Gets the path to the json file containing all nodes. Extracting the nodes matching the list of tags.
+    Gets the path to the json file containing all nodes. 
+    Extracting the nodes matching the list of tags.
+
+    :param input: A string to the file containing all probes
+    :param field: The object field that should be matched
+    :param tags: The tag(s) which should be matched
+    :return: Returning a dictionary of all nodes matching the filter.
     """
 
     filtered_dict = defaultdict(list)
@@ -65,24 +41,19 @@ def filterLocalNodes(input, field, tags):
         nodes = json.load(file)
         for elem in nodes["objects"]:
             if type(elem[field]) == list:
-                for tag in tags:
-                    if tag in elem[field]:
-                        filtered_dict["objects"].append(elem)
-                        # print("Found matching element")
-                        break
+                if any(set(tags).intersection(elem[field])):
+                    filtered_dict["objects"].append(elem)
             else:
-                for tag in tags:
-                    if tag == elem[field]:
-                        filtered_dict["objects"].append(elem)
-                        # print("Found matching element")
-                        break
+                if elem[field] in tags:
+                    filtered_dict["objects"].append(elem)
 
     return filtered_dict
 
 
-def filterLocalNodes_negated(input, field, tags):
+def filterLocalNodesNegated(input, field, tags):
     """
-    Gets the path to the json file containing all nodes. Extracting the nodes NOT matching the list of tags.
+    Gets the path to the json file containing all nodes. 
+    Extracting the nodes NOT matching the list of tags.
     """
 
     filtered_dict = defaultdict(list)
@@ -90,35 +61,32 @@ def filterLocalNodes_negated(input, field, tags):
         nodes = json.load(file)
         for elem in nodes["objects"]:
             if type(elem[field]) == list:
-                found_tag=False
-                for tag in tags:
-                    if tag in elem[field]:
-                        found_tag=True
-                        break
-                if not found_tag:
+                if not any(set(tags).intersection(elem[field])):
                     filtered_dict["objects"].append(elem)
             else:
-                found_tag=False
-                for tag in tags:
-                    if tag == elem[field]:
-                        found_tag=True
-                        break
-                if not found_tag:
+                if elem[field] not in tags:
                     filtered_dict["objects"].append(elem)
 
     return filtered_dict
 
 
 def filterInvalidNodes(in_file, out_file):
+    """
+    Filtering invalid probes.
+    Invalid probes have missing geolocation attributes.
+    """
+
     print(f"Filtering 'invalid' nodes from '{in_file}' to '{out_file}'.")
     filtered = defaultdict(list)
 
+    invalid = 0
     with open(in_file, "r") as input_file:
         nodes = json.load(input_file)
         for elem in nodes["objects"]:
 
             # longitude and latitude must be valid
-            if type(elem["latitude"]) == NoneType or type(elem["longitude"]) == NoneType:
+            if elem["latitude"] is None or elem["longitude"] is None:
+                invalid += 1
                 continue
 
             filtered["objects"].append(elem)
@@ -126,123 +94,16 @@ def filterInvalidNodes(in_file, out_file):
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
 
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
-
-
-def filterConnected(in_file, out_file):
-    print(f"Filtering 'connected and working' nodes from '{in_file}' to '{out_file}'.")
-
-    # Filter "connected"
-    filtered = filterLocalNodes(in_file, "status_name", ["Connected", "connected"])
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    # Filter "IP works"
-    filtered = filterLocalNodes(out_file, "tags", ["system-ipv6-works", "system-ipv4-works"])
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-    
-    # # Filter "DNS works"
-    # filtered = filterLocalNodes(out_file, "tags", ["system-resolves-aaaa-correctly", "system-resolves-a-correctly"])
-    
-    # with open(out_file, "w") as output_file:
-    #     json.dump(filtered, output_file, indent=4)
-    
-    # Filter "actual GPS location"
-    # NoneType = type(None)
-    # # if type(lat) == NoneType or type(lon) == NoneType:
-    # #     print("fuck")
-    # filtered = filterLocalNodes_negated(out_file, "latitude", NoneType)
-    
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
-
-
-def filterCellular(in_file, out_file):
-    print(f"Filtering 'cellular' nodes from '{in_file}' to '{out_file}'.")
-
-    filtered = filterLocalNodes(in_file, "tags", cellular_tags)
-    
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
-
-
-def filterWiFi(in_file, out_file):
-    print(f"Filtering 'WiFi' nodes from '{in_file}' to '{out_file}'.")
-
-    filtered = filterLocalNodes(in_file, "tags", wifi_tags)
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-        
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
-
-
-def filterSatellite(in_file, out_file):
-    print(f"Filtering 'satellite' nodes from '{in_file}' to '{out_file}'.")
-
-    filtered_v4 = filterLocalNodes(in_file, "asn_v4", [14593])
-    filtered_v6 = filterLocalNodes(in_file, "asn_v6", [14593])
-
-    filtered_dict = defaultdict(list)
-    for elem in filtered_v4["objects"]:
-        filtered_dict["objects"].append(elem)
-
-    for elem in filtered_v6["objects"]:
-        if not elem in filtered_dict["objects"]:
-            filtered_dict["objects"].append(elem)
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered_dict, output_file, indent=4)
-
-    print(f"Nodes matching the filter: {len(filtered_dict['objects'])}")
-
-
-def filterLAN(in_file, out_file):
-    print(f"Filtering 'lan (home and NOT wifi,cellular,satellite,isp,...)' nodes from '{in_file}' to '{out_file}'.")
-
-    filtered = filterLocalNodes(in_file, "tags", ["home"])
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    filtered = filterLocalNodes_negated(out_file, "tags", ["gcs", "aws", "wireless-isp", "isp", "data-center", "datacenter", "datacentre", "satellite", "starlink"] + wifi_tags + cellular_tags)
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    filtered = filterLocalNodes_negated(out_file, "asn_v4", [14593])
-
-    with open(out_file, "w") as output_file:
-        json.dump(filtered, output_file, indent=4)
-
-    print(f"Nodes matching the filter: {len(filtered['objects'])}")
-
-
-def showAvailableTags(args):
-    """
-    Reading an input file with connected nodes and printing all available user tags which can be filtered for.
-    """
-
-    filtered_dict = defaultdict(dict)
-    with open(args.input, "r") as input_file:
-        nodes = json.load(input_file)
-        for node in nodes["objects"]:
-            for tag in node["tags"]:
-                filtered_dict[tag] = filtered_dict.get(tag, 0) + 1
-
-    for v in sorted(filtered_dict, key=filtered_dict.get, reverse=True):
-        print(f"{v}:".ljust(32), f"{filtered_dict[v]}")
+    print(f"Invalid probes: {invalid} - Correct probes: {len(filtered['objects'])}")
 
 
 def findConflictingNodes(in_file0, in_file1, out_file):
-    print(f"Searching for conficting nodes between '{in_file0}' and '{in_file1}'.")
+    """
+    Removing conflicting probes from two dictionaries.
+    Writing the output to 'out_file'.
+    """
+
+    print(f"Searching for 'Conflicting' nodes between '{in_file0}' and '{in_file1}'.")
 
     with open(in_file0, "r") as input_file0:
         nodes0 = json.load(input_file0)
@@ -264,9 +125,9 @@ def findConflictingNodes(in_file0, in_file1, out_file):
 
     num_conflicting_nodes = len(filtered_dict['objects'])
     if num_conflicting_nodes == 0:
-        print(f"Found 0 nodes with conflictings tags.")
+        print(f"Found 0 nodes with conflicting tags.")
     else:
-        print(f"Found {num_conflicting_nodes} nodes with conflictings tags - saving them to {out_file}")
+        print(f"Found {num_conflicting_nodes} nodes with conflicting tags - saving them to '{out_file}'.")
         
         with open(out_file, "w") as output_file:
             json.dump(filtered_dict, output_file, indent=4)
@@ -287,21 +148,137 @@ def filterConflictingNodes(in_file0, in_file1):
         for node0 in nodes0["objects"]:
             conflicting_ids.append(node0["id"])
 
-        filtered = filterLocalNodes_negated(in_file0, "id", conflicting_ids)
+        filtered = filterLocalNodesNegated(in_file0, "id", conflicting_ids)
         
         with open(in_file0, "w") as output_file:
             json.dump(filtered, output_file, indent=4)
         
-        filtered = filterLocalNodes_negated(in_file1, "id", conflicting_ids)
+        filtered = filterLocalNodesNegated(in_file1, "id", conflicting_ids)
         
         with open(in_file1, "w") as output_file:
             json.dump(filtered, output_file, indent=4)
 
-        print(f"Removed {num_conflicting_nodes} conflicting nodes from {in_file0} and {in_file1}")
+    print(f"Removed {num_conflicting_nodes} conflicting nodes from {in_file0} and {in_file1}")
+
+
+
+def filterConnected(in_file, out_file):
+    """
+    Filtering for nodes with status_name 'connected'.
+    Writing the resulting json to 'out_file'.
+    """
+
+    print(f"Filtering 'Connected and Working' nodes from '{in_file}' to '{out_file}'.")
+
+    # Filter "connected"
+    filtered = filterLocalNodes(in_file, "status_name", ["Connected", "connected"])
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    # Filter "IP works"
+    filtered = filterLocalNodes(out_file, "tags", ["system-ipv6-works", "system-ipv4-works"])
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    print(f"Connected probes: {len(filtered['objects'])}")
+
+    # Filtering automatically invalid probes
+    filterInvalidNodes(out_file, out_file)
+
+
+def filterCellular(in_file, out_file):
+    print(f"Filtering 'Cellular' nodes from '{in_file}' to '{out_file}'.")
+
+    filtered = filterLocalNodes(in_file, "tags", cellular_tags)
+    
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    print(f"Cellular probes: {len(filtered['objects'])}")
+
+
+def filterWiFi(in_file, out_file):
+    print(f"Filtering 'WiFi' nodes from '{in_file}' to '{out_file}'.")
+
+    filtered = filterLocalNodes(in_file, "tags", wifi_tags)
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+        
+    print(f"WiFi probes: {len(filtered['objects'])}")
+
+
+def filterSatellite(in_file, out_file):
+    print(f"Filtering 'Satellite' nodes from '{in_file}' to '{out_file}'.")
+
+    filtered_v4 = filterLocalNodes(in_file, "asn_v4", [14593])
+    filtered_v6 = filterLocalNodes(in_file, "asn_v6", [14593])
+
+    filtered_dict = defaultdict(list)
+    for elem in filtered_v4["objects"]:
+        filtered_dict["objects"].append(elem)
+
+    for elem in filtered_v6["objects"]:
+        if not elem in filtered_dict["objects"]:
+            filtered_dict["objects"].append(elem)
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered_dict, output_file, indent=4)
+
+    print(f"Satellite probes: {len(filtered_dict['objects'])}")
+
+
+def filterLAN(in_file, out_file):
+    print(f"Filtering 'LAN' nodes from '{in_file}' to '{out_file}'.")
+
+    filtered = filterLocalNodes(in_file, "tags", ["home"])
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    filtered = filterLocalNodesNegated(out_file, "tags", ["gcs", "aws", "wireless-isp", "isp", "data-center", "datacenter", "datacentre", "satellite", "starlink"] + wifi_tags + cellular_tags)
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    filtered = filterLocalNodesNegated(out_file, "asn_v4", [14593])
+    filtered = filterLocalNodesNegated(out_file, "asn_v6", [14593])
+
+    with open(out_file, "w") as output_file:
+        json.dump(filtered, output_file, indent=4)
+
+    print(f"LAN probes: {len(filtered['objects'])}")
 
 
 # --------------------------------------------------------------------------
-# GEOLOCATION CALCULATIONS
+# PROBE FILTERING ENDING
+# --------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------
+# AUXILIARY FUNCTIONS
+# --------------------------------------------------------------------------
+
+
+def showAvailableTags(in_file):
+    """
+    Reading an input file with connected nodes and printing all available user tags which can be filtered for.
+    """
+
+    filtered_dict = defaultdict(dict)
+    with open(in_file, "r") as input_file:
+        nodes = json.load(input_file)
+        for node in nodes["objects"]:
+            for tag in node["tags"]:
+                filtered_dict[tag] = filtered_dict.get(tag, 0) + 1
+
+    for v in sorted(filtered_dict, key=filtered_dict.get, reverse=True):
+        print(f"{v}:".ljust(32), f"{filtered_dict[v]}")
+
+
+# --------------------------------------------------------------------------
+# MATCHING AND MEASUREMENT POINT CREATION
 # --------------------------------------------------------------------------
 
 
@@ -502,6 +479,11 @@ def findMatchingNodes(baseNodes, possibleNodes):
 
     # print(f"Found {counter} matches")
 
+# --------------------------------------------------------------------------
+# GEOLOCATION CALCULATIONS
+# --------------------------------------------------------------------------
+
+
 def makeGeolocation(lat,lon):
     """
     Input is the latitude and longitude as strings.
@@ -657,22 +639,35 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230202.json")
+    parser.add_argument('-i', '--input', type=str, default="20230204.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
+    parser.add_argument('-t', '--tags', action="store_true", help="Printing all available user-tags and exit.")
+    parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files)!")
+    
     args = parser.parse_args()
+
+    if args.tags:
+        showAvailableTags(args.input)
+        exit(0)
+
+
+    if args.filter:
+        # TODO: Implement filter function
+
+        exit(0)
 
     # filterWifiNodes()
     # filterLocalNodes("20230202.json", "connected.json", ["wi-fi", "wireless", "wifi", "WiFi", "WIFI", "wireless-isp"])
 
-    # showAvailableTags(args)
 
-    # filterConnected("20230204.json", "connected.json")
-    # filterInvalidNodes("connected.json", "connected.json")
-    # filterCellular("connected.json", "cellular.json")
-    # filterWiFi("connected.json", "wifi.json")
-    # filterLAN("connected.json", "lan.json")
-    # filterSatellite("connected.json", "satellite.json")
+    filterConnected("20230204.json", "connected.json")
+    filterCellular("connected.json", "cellular.json")
+    filterWiFi("connected.json", "wifi.json")
+    filterLAN("connected.json", "lan.json")
+    filterSatellite("connected.json", "satellite.json")
     
+    exit(0)
+
     # filterConflictingNodes("lan.json", "wifi.json")
     # filterConflictingNodes("lan.json", "cellular.json")
     # filterConflictingNodes("lan.json", "satellite.json")
