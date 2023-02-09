@@ -723,13 +723,13 @@ if __name__ == '__main__':
                     tags = next((node["tags"] for node in probes if node["id"] == id), [])
                     if "system-ipv4-works" in tags:
                         continent_ipv4[continent].append(id)
-                        continue
+                        # continue
                     if "system-ipv6-works" in tags:
                         continent_ipv6[continent].append(id)
-                        continue
+                        # continue
                     # else
-                    print(f"Something is sus")
-                    exit(42)
+                    # print(f"Something is sus")
+                    # exit(42)
 
         writeDictToFile(continent_ipv4, "continent_v4.csv")
         writeDictToFile(continent_ipv6, "continent_v6.csv")
