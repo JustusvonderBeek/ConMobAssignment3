@@ -612,7 +612,7 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
     continent_dict["AS"] = []
     continent_dict["AF"] = []
     continent_dict["OC"] = []
-    continent_dict["middle_east"] = []
+    continent_dict["ME"] = []
 
     eu_countries = ["DE", "BE", "NL", "AT", "ES", "FR", "IT", "GB", "PL", "CZ", "CH", "RU", "FI", "RS", "IL", "SE", "UA", "TR", "AZ", "IE", "DK", "EE", "LV", "SI", "NO", "BG", "GR", "RO", "CY"]
     us_countries = ["US", "CA"]
@@ -637,7 +637,7 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
         elif country in af_countries:
             continent_dict["AF"] += id_list
         elif country in middle_east:
-            continent_dict["middle_east"] += id_list
+            continent_dict["ME"] += id_list
         else:
             print(f"[{country}]: ({len(id_list)}) {id_list}")
             continent_dict["Ping"] += id_list
@@ -762,22 +762,24 @@ def create_meassurements():
 
 
     # intra-continental pings
-    
+    output.write("# Intra Continental Pings: \n")
+
+    for k,v in tqdm(continent_matching.items()):
+        print(f"Source: {k}  Dest: {k}")
+        if k == "AF":
+            end = 2
+        else:
+            end = 3
+        # print(end)
+        for i in range(end):
+            add_curl_command(k, k, i)
 
     # inter-continental pings
-    # for k,v in tqdm(continent_matching.items()):
-    #     for dest in v:
-    #         print(f"Source: {k}  Dest: {dest}")
-    #         if dest == "AF":
-    #             end = 2
-    #         else:
-    #             end = 3
-    #         print(end)
-    #         for i in range(end):
-    #             add_curl_command(k, dest, i)
+    output.write("\n\n# Inter Continental Pings: \n")
 
-
-    # for k,v in continent_matching.items():
+    for k,v in tqdm(continent_matching.items()):
+        for dest in v:
+            add_curl_command(k, dest, 0)
 
     output.close()
 
