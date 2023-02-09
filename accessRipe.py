@@ -178,7 +178,7 @@ def filterConnected(in_file, out_file):
         json.dump(filtered, output_file, indent=4)
 
     # Filter "IP works"
-    filtered = filterLocalNodes(out_file, "tags", ["system-ipv6-works", "system-ipv4-works"])
+    filtered = filterLocalNodes(out_file, "tags", ["system-ipv4-works"]) #["system-ipv6-works", "system-ipv4-works"])
 
     with open(out_file, "w") as output_file:
         json.dump(filtered, output_file, indent=4)
