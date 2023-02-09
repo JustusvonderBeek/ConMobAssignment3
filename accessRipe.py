@@ -2,13 +2,16 @@ import requests
 import json
 import posixpath
 import csv
+import ast
 import haversine as hs
 import numpy as np
+import pandas as pd
 
 from argparse import ArgumentParser
 from urllib.parse import urljoin
 from collections import defaultdict
 from tqdm import tqdm
+
 
 # --------------------------------------------------------------------------
 # DEFINITIONS
@@ -661,7 +664,7 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
 ping_template = """{
     "definitions": [
         {
-            "target": TARGET_STRING,
+            "target": "TARGET_STRING",
             "af": 4,
             "packets": 3,
             "size": 48,
@@ -675,9 +678,9 @@ ping_template = """{
     ],
     "probes": [
         {
-            "value": PROBES_CSV_STRING,
+            "value": "PROBES_CSV_STRING",
             "type": "probes",
-            "requested": PROBES_COUNT
+            "requested": "PROBES_COUNT"
         }
     ],
     "is_oneoff": false,
@@ -721,11 +724,9 @@ trace_template = """{
 }
 """
 
-def create_meassurments():
-    # intra-continetal pings
+curl_template = """curl --dump-header - -H "Content-Type: application/json" -H "Accept: application/json" -X POST -d '{}' https://atlas.ripe.net/api/v2/measurements//?key=f9a735fa-c429-409d-b028-1050a3ee840b"""
 
-
-    # inter-continetal pings
+def create_meassurements():
     continent_matching = defaultdict(list)
     continent_matching["EU"]=["NA", "AF", "AS", "ME"]
     continent_matching["NA"]=["EU", "SA", "AS", "OC"]
@@ -736,6 +737,50 @@ def create_meassurments():
     continent_matching["OC"]=["NA", "SA", "ME", "AS"]
 
 
+    output = open("ping_measure.sh", "a")
+
+    output.write("#!/bin/bash\n\n")
+    
+    def add_curl_command(source, dest, dest_count):
+        datacenter = pd.read_csv("datacenters.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
+        ids = pd.read_csv("continent_v4.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
+
+        ping = json.loads(ping_template)
+        ping["definitions"][0]["target"] = list(datacenter[datacenter["Continent"] == dest]["IP"])[dest_count]
+        
+        for index,row in ids.iterrows():
+            if row["Continent"] == source:
+                id_list = ast.literal_eval(row["IDs"])
+                ping["probes"][0]["value"] = str(id_list)[1:-1]
+                break
+
+        ping["probes"][0]["requested"] = int( ids[ids["Continent"] == source]["Elements"])
+
+        ping_config = json.dumps(ping)
+        curl_command = curl_template.replace("""{}""", ping_config)
+        output.write(curl_command + "\n")
+
+
+    # intra-continental pings
+    
+
+    # inter-continental pings
+    # for k,v in tqdm(continent_matching.items()):
+    #     for dest in v:
+    #         print(f"Source: {k}  Dest: {dest}")
+    #         if dest == "AF":
+    #             end = 2
+    #         else:
+    #             end = 3
+    #         print(end)
+    #         for i in range(end):
+    #             add_curl_command(k, dest, i)
+
+
+    # for k,v in continent_matching.items():
+
+    output.close()
+
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -745,7 +790,7 @@ def create_meassurments():
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230208.json")
+    parser.add_argument('-i', '--input', type=str, default="20230204.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
     parser.add_argument('-t', '--tags', action="store_true", help="Printing all available user-tags and exit.")
     parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
@@ -803,6 +848,8 @@ if __name__ == '__main__':
 
         writeDictToFile(continent_ipv4, "continent_v4.csv")
         writeDictToFile(continent_ipv6, "continent_v6.csv")
+
+    create_meassurements()
 
 # --------------------------------------------------------------------------
 # END OF MAIN
