@@ -652,14 +652,6 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
     for country, id_list in country_id_list3.items():
         match_continent(country, id_list)
 
-    # print(f"[EU]: {len(continent_dict['EU'])}")
-    # print(f"[NA]: {len(continent_dict['NA'])}")
-    # print(f"[SA]: {len(continent_dict['SA'])}")
-    # print(f"[AS]: {len(continent_dict['AS'])}")
-    # print(f"[OC]: {len(continent_dict['OC'])}")
-    # print(f"[AF]: {len(continent_dict['AF'])}")
-    # print(f"[middle_east]: {len(continent_dict['middle_east'])}")
-
     return continent_dict
 
 # --------------------------------------------------------------------------
@@ -723,32 +715,11 @@ if __name__ == '__main__':
                     tags = next((node["tags"] for node in probes if node["id"] == id), [])
                     if "system-ipv4-works" in tags:
                         continent_ipv4[continent].append(id)
-                        # continue
                     if "system-ipv6-works" in tags:
                         continent_ipv6[continent].append(id)
-                        # continue
-                    # else
-                    # print(f"Something is sus")
-                    # exit(42)
 
         writeDictToFile(continent_ipv4, "continent_v4.csv")
         writeDictToFile(continent_ipv6, "continent_v6.csv")
-
-        # print(f"[EU]: {len(continent_ipv4['EU'])}")
-        # print(f"[NA]: {len(continent_ipv4['NA'])}")
-        # print(f"[SA]: {len(continent_ipv4['SA'])}")
-        # print(f"[AS]: {len(continent_ipv4['AS'])}")
-        # print(f"[OC]: {len(continent_ipv4['OC'])}")
-        # print(f"[AF]: {len(continent_ipv4['AF'])}")
-        # print(f"[middle_east]: {len(continent_ipv4['middle_east'])}")
-
-        # print(f"[EU]: {len(continent_ipv6['EU'])}")
-        # print(f"[NA]: {len(continent_ipv6['NA'])}")
-        # print(f"[SA]: {len(continent_ipv6['SA'])}")
-        # print(f"[AS]: {len(continent_ipv6['AS'])}")
-        # print(f"[OC]: {len(continent_ipv6['OC'])}")
-        # print(f"[AF]: {len(continent_ipv6['AF'])}")
-        # print(f"[middle_east]: {len(continent_ipv6['middle_east'])}")
 
 # --------------------------------------------------------------------------
 # END OF MAIN
