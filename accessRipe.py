@@ -662,7 +662,7 @@ def sortByContinent(country_id_list0, country_id_list1, country_id_list2, countr
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230204.json")
+    parser.add_argument('-i', '--input', type=str, default="20230208.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
     parser.add_argument('-t', '--tags', action="store_true", help="Printing all available user-tags and exit.")
     parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
