@@ -2,11 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
 import pandas as pd
-import json, scipy
+import json, scipy, ast
+import geopandas as gpd
 
 from argparse import ArgumentParser
 from tqdm import tqdm
 from collections import defaultdict
+from shapely.geometry import Point
+from geopandas import GeoDataFrame
 
 # --------------------------------------------------------------------------
 # HELPERS
@@ -55,6 +58,36 @@ def extractPingLatencies(args):
     print(f"Skipped '{skip_counter}' nodes because of missing PING results!")
     return data
 
+def extractGeolocation(inputs, location_file):
+    """
+    Expecting the CSV file(s) with IDs. Extracting all IDs and combine them into single list.
+    Returning a list of Points of Geolocations.
+    """
+
+    if type(inputs) != list:
+        inputs = [inputs]
+
+    ids = []
+    for file in inputs:
+        print(f"Reading in '{file}'...")
+        data = pd.read_csv(file)
+        for index, row in data.iterrows():
+            id_list = ast.literal_eval(row["IDs"])
+            # print(id_list)
+            ids.extend(id_list)
+
+    # print(ids)
+    locations = list()
+    with open(location_file, "r") as location_input:
+        probes = json.load(location_input)
+        probes = probes["objects"]
+        for id in ids:
+            location = next(((node["longitude"],node["latitude"]) for node in probes if node["id"] == id), "Unknown")
+            locations.append(Point(location))
+
+    # print(locations)
+    return locations
+
 # --------------------------------------------------------------------------
 # PLOTTING
 # --------------------------------------------------------------------------
@@ -83,6 +116,30 @@ def plotPingLatencyCDF(args):
 
     exportToPdf(fig, args.output)
 
+# Adapted from: 
+# https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
+def plotLocationMap(inputs, output):
+    """
+    Expecting the input file(s) with the continent to ID matching.
+    Extracting the latitude and longitude and plotting this data on a map.
+    """
+
+    locations = extractGeolocation(inputs, "connected.json")
+    with open("test.csv", "w") as test_csv:
+        test_csv.write("Longitude,Latitude\n")
+        for point in locations:
+            test_csv.write(f"{point.x},{point.y}\n")
+    
+    df = pd.read_csv("test.csv", delimiter=",")
+    gdf = GeoDataFrame(df, geometry=locations)
+    # gdf = GeoDataFrame(df[:10], geometry=locations[:10])
+    # gdf2 = GeoDataFrame(df[10:20], geometry=locations[10:20])
+
+    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', color="red", markersize=10, label="Test", legend=True)
+    # gdf2.plot(ax=world.plot(figsize=(10,6)), marker='o', color="green", markersize=10, label="Test", legend=True)
+
+    plt.show()
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -95,4 +152,5 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    plotPingLatencyCDF(args)
+    # plotPingLatencyCDF(args)
+    plotLocationMap(args.input, "map.pdf")
