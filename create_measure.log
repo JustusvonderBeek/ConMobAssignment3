@@ -1,0 +1,1473 @@
+HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:43 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857232]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:44 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857233]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:45 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857234]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:46 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857235]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:47 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857236]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:48 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857237]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:49 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857238]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:50 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857239]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:51 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857240]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:52 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857241]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:53 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857242]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:54 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857244]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:55 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857245]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:56 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857246]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:57 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857247]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:58 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857248]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:40:59 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857249]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:00 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857250]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:01 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857251]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:02 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857252]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:03 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857253]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:05 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857255]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:06 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857256]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:07 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857257]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:08 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857258]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:09 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857259]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:10 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857260]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:11 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857262]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:12 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857263]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:13 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857264]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:14 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857265]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:15 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857266]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:16 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857268]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:17 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857269]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:18 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857270]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:19 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857271]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:20 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857272]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:21 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857273]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:22 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857274]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:23 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857275]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:24 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857276]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:25 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857277]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:26 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857278]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:26 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857279]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:27 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857281]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:28 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857283]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:29 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857284]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:30 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857285]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:31 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857286]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:32 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857287]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:33 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857288]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:34 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857289]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:35 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857291]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:36 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857293]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:37 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857294]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:38 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857295]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:39 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857296]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:40 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857298]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:41 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857299]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:42 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857300]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:43 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857301]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:44 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857302]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:45 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857304]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:46 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857305]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:47 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857306]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:48 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857307]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:49 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857308]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:50 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857309]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:50 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857310]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:51 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857312]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:52 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857313]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:53 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857314]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:54 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857315]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:55 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857316]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:56 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857317]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:57 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857318]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:58 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857319]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:41:59 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857320]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:00 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857321]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:01 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857322]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:02 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857324]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:03 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857326]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:04 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857327]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:05 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857328]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:06 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857329]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:07 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857331]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:08 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857333]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:09 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857334]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:10 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857335]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:11 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857336]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:12 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857337]}HTTP/1.1 201 Created
+Server: nginx
+Date: Thu, 09 Feb 2023 18:42:13 GMT
+Content-Type: application/json
+Content-Length: 27
+Connection: keep-alive
+Vary: Accept, Cookie
+Allow: GET, POST, OPTIONS
+Content-Security-Policy: frame-ancestors 'self' https://alpha-ui.atlas.ripe.net https://beta-ui.atlas.ripe.net https://ui.atlas.ripe.net; default-src 'unsafe-inline' 'unsafe-eval' https: 'self' https://www-static.ripe.net https://www.ripe.net https://stat.ripe.net https://www-analytics.ripe.net
+Strict-Transport-Security: max-age=15768000
+Permissions-Policy: interest-cohort=()
+Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+Access-Control-Allow-Credentials: true
+Access-Control-Allow-Headers: DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range, X-Csrftoken
+Access-Control-Expose-Headers: Content-Length, Content-Range
+
+{"measurements":[49857338]}
