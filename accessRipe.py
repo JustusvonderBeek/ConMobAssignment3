@@ -1,6 +1,7 @@
 import requests
 import json
 import posixpath
+import csv
 import haversine as hs
 import numpy as np
 
@@ -297,16 +298,14 @@ def writeDictToFile(dict, out_file):
 
     print(f"Writing dict to '{out_file}'...")
 
+    header = ["Continent", "Elements", "IDs"]
+
     with open(out_file, "w") as output:
-        output.write("Continent,Elements,IDs\n")
+        writer = csv.writer(output)
+        writer.writerow(header)
         for continent, id_list in dict.items():
-            output.write(f"{continent},{len(id_list)},[")
-            for index,id in enumerate(id_list):
-                if index + 1 == len(id_list):
-                    output.write(f"{id}")
-                else:
-                    output.write(f"{id},")
-            output.write("]\n")
+            row = [continent, len(id_list), id_list]
+            writer.writerow(row)
 
 # --------------------------------------------------------------------------
 # MATCHING AND MEASUREMENT POINT CREATION
