@@ -100,7 +100,11 @@ def combineMeasures(input_json, id_list):
 
         datapoints = list()
         for test in id_measures:
-            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": [x["rtt"] for x in test["result"] if test["rcvd"] == 3], "Src": test["src_addr"], "Dst": test["dst_addr"]})
+            latency = []
+            for elem in test["result"]:
+                if "rtt" in elem.keys():
+                    latency.append(elem["rtt"])
+            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Src": test["src_addr"], "Dst": test["dst_addr"]})
 
         # print(datapoints)
         data = pd.concat([pd.DataFrame(datapoints), data], ignore_index=True)
