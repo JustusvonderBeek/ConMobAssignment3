@@ -23,7 +23,7 @@ distance_threshold = 100.0 # Distance in kilometers
 cellular_tags = ["lte", "5g", "4g", "3g"]
 wifi_tags = ["wifi", "wi-fi", "wireless", "system-wifi", "fixed-wireless"]
 
-default_measurement_script = "measurements.sh"
+default_measurement_script = "measurement_creation/measurements.sh"
 
 # --------------------------------------------------------------------------
 # PROBE FILTERING
@@ -406,17 +406,17 @@ def findTripleMatches(in_file0, in_file1, in_file2):
     return meassurement_points
 
 def combineOnly2Nodes(args):
-    with open("cellular.json", "r") as input_cellular:
+    with open("probes/cellular.json", "r") as input_cellular:
         cellularProbes = json.load(input_cellular)
-    with open("wifi.json", "r") as input_wifi:
+    with open("probes/wifi.json", "r") as input_wifi:
         wifiProbes = json.load(input_wifi)
-    with open("lan.json", "r") as input_lan:
+    with open("probes/lan.json", "r") as input_lan:
         lanProbes = json.load(input_lan)
 
     cellular_ids,lan_ids = findMatchingNodes(cellularProbes, lanProbes)
-    filtered_cellular = filterLocalNodes("connected.json", "id", cellular_ids)
+    filtered_cellular = filterLocalNodes("probes/connected.json", "id", cellular_ids)
 
-    with open("cellular_test.csv", "w") as output_file:
+    with open("measurement_creation/cellular_test.csv", "w") as output_file:
         output_file.write("Cellular IDs,LAN IDs,Country\n")
         country_codes = getCountryCodes(cellular_ids)
         for i in tqdm(range(len(cellular_ids))):
@@ -425,9 +425,9 @@ def combineOnly2Nodes(args):
             output_file.write(country_codes[i] + "\n")
 
     wifi_ids,lan_ids = findMatchingNodes(wifiProbes, lanProbes)
-    filtered_cellular = filterLocalNodes("connected.json", "id", wifi_ids)
+    filtered_cellular = filterLocalNodes("probes/connected.json", "id", wifi_ids)
 
-    with open("wifi_test.csv", "w") as output_file:
+    with open("measurement_creation/wifi_test.csv", "w") as output_file:
         output_file.write("WiFi IDs,LAN IDs,Country\n")
         country_codes = getCountryCodes(wifi_ids)
         for i in tqdm(range(len(wifi_ids))):
@@ -439,16 +439,16 @@ def combineOnly2Nodes(args):
 
 def combineNodes(args):
 
-    with open("cellular.json", "r") as input_nodes_base:
+    with open("probes/cellular.json", "r") as input_nodes_base:
         baseNodes = json.load(input_nodes_base)
-    with open("wifi.json", "r") as input_nodes_compare:
+    with open("probes/wifi.json", "r") as input_nodes_compare:
         possibleNodes = json.load(input_nodes_compare)
 
     cellular_ids,wifi_ids = findMatchingNodes(baseNodes, possibleNodes)
-    filtered = filterLocalNodes("connected.json", "id", cellular_ids)
+    filtered = filterLocalNodes("probes/connected.json", "id", cellular_ids)
     # print(filtered)
 
-    with open("lan.json", "r") as input_nodes_lan:
+    with open("probes/lan.json", "r") as input_nodes_lan:
         possibleNodes = json.load(input_nodes_lan)
     _,lan_ids = findMatchingNodes(filtered, possibleNodes)
 
@@ -536,7 +536,7 @@ def getCountryCodes(id_list):
     """
 
     country_codes = list()
-    with open("connected.json", "r") as input_file:
+    with open("probes/connected.json", "r") as input_file:
         probes = json.load(input_file)
         probes = probes["objects"]
         for id in id_list:
@@ -552,7 +552,7 @@ def sortByCountryCodes(id_list):
     """
 
     country_dict = defaultdict(list)
-    with open("connected.json", "r") as input_file:
+    with open("probes/connected.json", "r") as input_file:
         probes = json.load(input_file)
         probes = probes["objects"]
         for id in id_list:
@@ -744,8 +744,8 @@ def create_measurements(output_file):
     output.write("#!/bin/bash\n\n")
     
     def add_curl_command(source, dest, dest_count, template):
-        datacenter = pd.read_csv("datacenters.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
-        ids = pd.read_csv("continent_v4.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
+        datacenter = pd.read_csv("measurement_creation/datacenters.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
+        ids = pd.read_csv("measurement_creation/continent_v4.csv", sep=",", index_col=None, keep_default_na=False, na_values=["_"], na_filter=False)
 
         command = json.loads(template)
         command["definitions"][0]["target"] = list(datacenter[datacenter["Continent"] == dest]["IP"])[dest_count]
@@ -831,24 +831,24 @@ if __name__ == '__main__':
         exit(0)
 
     if args.filter:
-        filterConnected(args.input, "connected.json")
-        filterCellular("connected.json", "cellular.json")
-        filterWiFi("connected.json", "wifi.json")
-        filterLAN("connected.json", "lan.json")
-        filterSatellite("connected.json", "satellite.json")
+        filterConnected(args.input, "probes/connected.json")
+        filterCellular("probes/connected.json", "probes/cellular.json")
+        filterWiFi("probes/connected.json", "probes/wifi.json")
+        filterLAN("probes/connected.json", "probes/lan.json")
+        filterSatellite("probes/connected.json", "probes/satellite.json")
 
-        filterConflictingNodes("lan.json", "wifi.json")
-        filterConflictingNodes("lan.json", "cellular.json")
-        filterConflictingNodes("lan.json", "satellite.json")
-        filterConflictingNodes("wifi.json", "cellular.json")
-        filterConflictingNodes("wifi.json", "satellite.json")
-        filterConflictingNodes("cellular.json", "satellite.json")
+        filterConflictingNodes("probes/lan.json", "probes/wifi.json")
+        filterConflictingNodes("probes/lan.json", "probes/cellular.json")
+        filterConflictingNodes("probes/lan.json", "probes/satellite.json")
+        filterConflictingNodes("probes/wifi.json", "probes/cellular.json")
+        filterConflictingNodes("probes/wifi.json", "probes/satellite.json")
+        filterConflictingNodes("probes/cellular.json", "probes/satellite.json")
 
     if args.matching:
         # List of IDs that can be used for measurements
-        (wifi_ids, wifi_lan_ids) = getMeasurementNodes("wifi.json", "lan.json")
-        (cellular_ids, cell_lan_ids) = getMeasurementNodes("cellular.json", "lan.json")
-        (satellite_ids, sat_lan_ids) = getMeasurementNodes("satellite.json", "lan.json")
+        (wifi_ids, wifi_lan_ids) = getMeasurementNodes("probes/wifi.json", "probes/lan.json")
+        (cellular_ids, cell_lan_ids) = getMeasurementNodes("probes/cellular.json", "probes/lan.json")
+        (satellite_ids, sat_lan_ids) = getMeasurementNodes("probes/satellite.json", "probes/lan.json")
 
         lan_ids = deduplicateIDs(cell_lan_ids, wifi_lan_ids)
         lan_ids = deduplicateIDs(lan_ids, sat_lan_ids)
@@ -863,7 +863,7 @@ if __name__ == '__main__':
 
         continent_ipv4 = defaultdict(list)
         continent_ipv6 = defaultdict(list)
-        with open("connected.json", "r") as input_file:
+        with open("probes/connected.json", "r") as input_file:
             probes = json.load(input_file)
             probes = probes["objects"]
             for continent in continent_ids:
@@ -874,8 +874,8 @@ if __name__ == '__main__':
                     if "system-ipv6-works" in tags:
                         continent_ipv6[continent].append(id)
 
-        writeDictToFile(continent_ipv4, "continent_v4.csv")
-        writeDictToFile(continent_ipv6, "continent_v6.csv")
+        writeDictToFile(continent_ipv4, "measurement_creation/continent_v4.csv")
+        writeDictToFile(continent_ipv6, "measurement_creation/continent_v6.csv")
 
     create_measurements(default_measurement_script)
 
