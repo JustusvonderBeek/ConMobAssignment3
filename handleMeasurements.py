@@ -79,32 +79,81 @@ def filterJsonList(input_json, field):
 
     output = set()
     for elem in input_json:
-        output.add(elem[field])
+        if field in elem.keys():
+            output.add(elem[field])
 
     return list(output)
 
-def combineMeasures(input_json, id_list):
+def addPingInformation(lan_probes, cell_probes, sat_probes, wifi_probes, id, dst):
+    """
+    Expecting a single measurement probe and the destination IP.
+    Returning Technology, Location, Probe Country, Probe Continent, DC Company, DC Continent
+    """
+
+    lan_ids = filterJsonList(lan_probes["objects"], "id")
+    cell_ids = filterJsonList(cell_probes["objects"], "id")
+    sat_ids = filterJsonList(sat_probes["objects"], "id")
+    wifi_ids = filterJsonList(wifi_probes["objects"], "id")
+
+    def filterProbe(probe_list):
+        for elem in probe_list:
+            if elem["id"] == id:
+                return elem
+
+    def collectInfos(probe):
+        """
+        Selecting: Location, Probe Country, Probe Continent, DC Company, DC Continent
+        Returning in the given order.
+        """
+        return (probe["latitude"], probe["longitude"]), probe["country_code"], "TODO", "GOOGLE", "EU"
+
+
+    if id in cell_ids:
+        technology = "CELLULAR"
+        probe = filterProbe(cell_probes["objects"])
+    elif id in sat_ids:
+        technology = "SATELLITE"
+        probe = filterProbe(sat_probes["objects"])
+    elif id in wifi_ids:
+        technology = "WIFI"
+        probe = filterProbe(wifi_probes["objects"])
+    else:
+        technology = "LAN"
+        probe = filterProbe(lan_probes["objects"])
+
+    # Unpacking the tuple with the * operator
+    return technology, *collectInfos(probe)
+    
+
+def extractPingMeasureInformation(input_json, id_list):
     """
     Expecting a json object list and the individual IDs.
     Combining measures based on the time of the day. E.g. measures at 2 p.m are combined.
     Returning a pandas DataFrame.
     """
 
-    columns = ["Measurement", "Probe ID", "Timestamp", "Sent", "Received", "Latency", "Src", "Dst"]
+    with open("probes/lan.json", "r") as lan:
+        lan_probes = json.load(lan)
+    with open("probes/cellular.json", "r") as cellular:
+        cell_probes = json.load(cellular)
+    with open("probes/satellite.json", "r") as sat:
+        sat_probes = json.load(sat)
+    with open("probes/wifi.json", "r") as wifi:
+        wifi_probes = json.load(wifi)
+
+    columns = ["Measurement", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
     data = pd.DataFrame(columns=columns)
     # print(data)
 
     for id in id_list:
         id_measures = [elem for elem in input_json if elem["prb_id"] == id]
+        technology, location, country, continent, dc, dc_continent = addPingInformation(lan_probes, cell_probes, sat_probes, wifi_probes, id, "TODO")
         # printJSON(id_measures)
 
         datapoints = list()
         for test in id_measures:
-            latency = []
-            for elem in test["result"]:
-                if "rtt" in elem.keys():
-                    latency.append(elem["rtt"])
-            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Src": test["src_addr"], "Dst": test["dst_addr"]})
+            latency = filterJsonList(test["result"], "rtt")
+            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Technology": technology, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Src": test["src_addr"], "Dst": test["dst_addr"], "Location": location, "Country": country, "Continent": continent, "Datacenter Company": dc, "Datacenter Continent": dc_continent})
 
         # print(datapoints)
         data = pd.concat([pd.DataFrame(datapoints), data], ignore_index=True)
@@ -130,7 +179,7 @@ def pingMeasureToDataFrame(id):
     # print(ping)
     involved_probes = filterJsonList(ping, "prb_id")
     # print(involved_probes)
-    data = combineMeasures(ping, involved_probes)
+    data = extractPingMeasureInformation(ping, involved_probes)
 
     return data
 
@@ -143,12 +192,15 @@ def rawPingMeasureToCsv(id_list, csv):
 
     # NOTE: Because this method and especially fetching data takes VERY long, parallelize the for loop
 
+    # if os.path.exists(csv):
+    #     return pd.read_csv(csv, index_col=None)
+
     df = None
     # Printing a progress bar
     # In order for output to work correctly, use tqdm.write(<string>) - this should make the output readable
     # and keep the progress bar at the bottom of the terminal
-    with tqdm(total=len(id_list)) as pbar:
-        with concurrent.futures.ThreadPoolExecutor() as executor:
+    with tqdm(total=len(id_list), desc="Fetch Measurements") as pbar:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             future_to_df = {executor.submit(pingMeasureToDataFrame, id): id for id in id_list}
             
             for future in concurrent.futures.as_completed(future_to_df):
@@ -166,6 +218,42 @@ def rawPingMeasureToCsv(id_list, csv):
 
     return df
 
+def addProbeInformation(df):
+    """
+    Expecting a DataFrame as input.
+    Updating the technology,Location column with the access type of the node.
+    Returning the updated DataFrame.
+    """
+
+    with open("probes/lan.json", "r") as lan:
+        lan_probes = json.load(lan)
+    with open("probes/cellular.json", "r") as cellular:
+        cell_probes = json.load(cellular)
+    with open("probes/satellite.json", "r") as sat:
+        sat_probes = json.load(sat)
+    with open("probes/wifi.json", "r") as wifi:
+        wifi_probes = json.load(wifi)
+    
+    lan_ids = filterJsonList(lan_probes["objects"], "id")
+    cell_ids = filterJsonList(cell_probes["objects"], "id")
+    sat_ids = filterJsonList(sat_probes["objects"], "id")
+    wifi_ids = filterJsonList(wifi_probes["objects"], "id")
+
+    for id in tqdm(df["Probe ID"].unique(), desc="Add technology"):
+        # print(id)
+        if id in lan_ids:
+            df.loc[df["Probe ID"] == id, "Technology"] = "LAN"
+        elif id in cell_ids:
+            df.loc[df["Probe ID"] == id, "Technology"] = "CELLULAR"
+        elif id in sat_ids:
+            df.loc[df["Probe ID"] == id, "Technology"] = "SATELLITE"
+        elif id in wifi_ids:
+            df.loc[df["Probe ID"] == id, "Technology"] = "WIFI"
+
+    # print(df.to_markdown())
+
+    return df
+
 # -------------------------------------------------------------------sss-------
 # MAIN METHOD
 # --------------------------------------------------------------------------
@@ -177,12 +265,14 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input', type=str, default="20230208.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
     parser.add_argument('-l', '--list', action="store_true", help="Printing all available user measurements.")
-    parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
-    parser.add_argument('-m', '--matching', action="store_true", help="Matching measurement points from existing *.json files. Overwriting existing files!")
+    # parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
+    # parser.add_argument('-m', '--matching', action="store_true", help="Matching measurement points from existing *.json files. Overwriting existing files!")
 
     args = parser.parse_args()
 
     if args.list:
         ping_ids, trace_ids = listMeasurements()
+        ping_data = rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
+        # ping_data = addProbeInformation(ping_data)
 
-        rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
+        ping_data.to_csv("measurements/ping/ping.csv", index=False)
