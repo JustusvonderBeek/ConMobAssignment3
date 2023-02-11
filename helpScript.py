@@ -79,7 +79,7 @@ def fillIPs(args):
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate CDF plots to compare the ping latency')
-    parser.add_argument('-i','--input', type=str, default="datacenters.csv", help="The path to the CSV file containing the datacenter information.")
+    parser.add_argument('-i','--input', type=str, default="measurement_creation/datacenters.csv", help="The path to the CSV file containing the datacenter information.")
     parser.add_argument('-c','--cost', action="store_true", help="If set, the costs are calculated.")
 
     args = parser.parse_args()
