@@ -84,16 +84,11 @@ def filterJsonList(input_json, field):
 
     return list(output)
 
-def addPingInformation(lan_probes, cell_probes, sat_probes, wifi_probes, id, dst):
+def addPingInformation(id, dst):
     """
     Expecting a single measurement probe and the destination IP.
     Returning Technology, Location, Probe Country, Probe Continent, DC Company, DC Continent
     """
-
-    lan_ids = filterJsonList(lan_probes["objects"], "id")
-    cell_ids = filterJsonList(cell_probes["objects"], "id")
-    sat_ids = filterJsonList(sat_probes["objects"], "id")
-    wifi_ids = filterJsonList(wifi_probes["objects"], "id")
 
     def filterProbe(probe_list):
         for elem in probe_list:
@@ -132,22 +127,13 @@ def extractPingMeasureInformation(input_json, id_list):
     Returning a pandas DataFrame.
     """
 
-    with open("probes/lan.json", "r") as lan:
-        lan_probes = json.load(lan)
-    with open("probes/cellular.json", "r") as cellular:
-        cell_probes = json.load(cellular)
-    with open("probes/satellite.json", "r") as sat:
-        sat_probes = json.load(sat)
-    with open("probes/wifi.json", "r") as wifi:
-        wifi_probes = json.load(wifi)
-
     columns = ["Measurement", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
     data = pd.DataFrame(columns=columns)
     # print(data)
 
     for id in id_list:
         id_measures = [elem for elem in input_json if elem["prb_id"] == id]
-        technology, location, country, continent, dc, dc_continent = addPingInformation(lan_probes, cell_probes, sat_probes, wifi_probes, id, "TODO")
+        technology, location, country, continent, dc, dc_continent = addPingInformation(id, "TODO")
         # printJSON(id_measures)
 
         datapoints = list()
@@ -272,6 +258,24 @@ if __name__ == '__main__':
 
     if args.list:
         ping_ids, trace_ids = listMeasurements()
+    
+        # Opening files for all threads
+        global lan_probes, cell_probes, sat_probes, wifi_probes
+        lan = open("probes/lan.json", "r")
+        lan_probes = json.load(lan)
+        cellular = open("probes/cellular.json", "r")
+        cell_probes = json.load(cellular)
+        sat = open("probes/satellite.json", "r")
+        sat_probes = json.load(sat)
+        wifi = open("probes/wifi.json", "r")
+        wifi_probes = json.load(wifi)
+
+        global lan_ids, cell_ids, sat_ids, wifi_ids
+        lan_ids = filterJsonList(lan_probes["objects"], "id")
+        cell_ids = filterJsonList(cell_probes["objects"], "id")
+        sat_ids = filterJsonList(sat_probes["objects"], "id")
+        wifi_ids = filterJsonList(wifi_probes["objects"], "id")
+
         ping_data = rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
         # ping_data = addProbeInformation(ping_data)
 
