@@ -134,6 +134,10 @@ def listMeasurements():
 
     return ping_ids, traceroute_ids
 
+# --------------------------------------------------------------------------
+# PING MEASUREMENT
+# --------------------------------------------------------------------------
+
 def addPingInformation(id, dst, file_dict):
     """
     Expecting a single measurement probe and the destination IP.
@@ -203,7 +207,7 @@ def extractPingMeasureInformation(input_json, id_list, file_dict):
     Returning a pandas DataFrame.
     """
 
-    columns = ["Measurement", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
+    columns = ["Measurement", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Min", "Max", "Avg", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
     data = pd.DataFrame(columns=columns)
     # print(data)
 
@@ -215,7 +219,7 @@ def extractPingMeasureInformation(input_json, id_list, file_dict):
         datapoints = list()
         for test in id_measures:
             latency = filterJsonList(test["result"], "rtt")
-            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Technology": technology, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Src": test["src_addr"], "Dst": test["dst_addr"], "Location": location, "Country": country, "Continent": continent, "Datacenter Company": dc, "Datacenter Continent": dc_continent})
+            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Technology": technology, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Min": test["min"], "Max": test["max"], "Avg": test["avg"], "Src": test["src_addr"], "Dst": test["dst_addr"], "Location": location, "Country": country, "Continent": continent, "Datacenter Company": dc, "Datacenter Continent": dc_continent})
 
         # print(datapoints)
         data = pd.concat([pd.DataFrame(datapoints), data], ignore_index=True)
@@ -266,7 +270,7 @@ def rawPingMeasureToCsv(id_list, csv):
     # Printing a progress bar
     # In order for output to work correctly, use tqdm.write(<string>) - this should make the output readable
     # and keep the progress bar at the bottom of the terminal
-    with tqdm(total=len(id_list), desc="Fetch Measurements") as pbar:
+    with tqdm(total=len(id_list), desc="Fetching PINGs") as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             future_to_df = {executor.submit(pingMeasureToDataFrame, id, file_dict): id for id in id_list}
             
@@ -282,6 +286,54 @@ def rawPingMeasureToCsv(id_list, csv):
 
     df.to_csv(csv, index=False)
     print(f"Saved ping measurement output to '{csv}'")
+
+    return df
+
+# --------------------------------------------------------------------------
+# TRACEROUTE MEASUREMENT
+# --------------------------------------------------------------------------
+
+def extractTraceMeasureInformation(trace, prbs, file_dict):
+    """
+    Expecting the trace measurement JSON and the involved probes.
+    Returning a valid DataFrame containg the measurement information.
+    """
+
+    return None
+
+def traceMeasureToDataFrame(id, file_dict):
+    """
+    Expecting a traceroute measurement ID.
+    Returning a Data Frame containing all measurements for this ID.
+    """
+
+    access_url = base_url + "measurements/"
+    id_url = access_url + str(id) + "/results/"
+    tqdm.write(f"Fetching TRACEROUTE measurements for {id}...")
+    # This can take quite some time (timeout, if none is given the request will not timeout)
+    # See: https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
+    trace = requests.get(id_url, timeout=default_timeout)
+    trace = trace.json()
+    printJSON(trace)
+    involved_probes = filterJsonList(trace, "prb_id")
+    print(involved_probes)
+    data = extractTraceMeasureInformation(trace, involved_probes, file_dict)
+
+    return data
+
+
+def rawTraceMeasurementsToCsv(id_list, csv):
+    """
+    Expecting the list of all traceroute measurements.
+    Fetching the measurement information and storing the measurement in the given CSV file.
+    """
+
+    df = None
+    for id in id_list[:1]:
+        traceMeasureToDataFrame(id, None)
+
+    df.to_csv(csv, index=False)
+    print(f"Saved traceroute measurement output to '{csv}'")
 
     return df
 
@@ -306,3 +358,5 @@ if __name__ == '__main__':
         ping_ids, trace_ids = listMeasurements()
         # Extract the PING CSV Table; already stores the result in the given file
         ping_data = rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
+
+        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
