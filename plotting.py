@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -24,6 +26,11 @@ def exportToPdf(fig, filename):
     fig.set_figwidth(8)
     fig.set_figheight(6)
 
+    # Check if folder exists and create the path if failed
+    dirname, fname = os.path.split(filename)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
     fig.savefig(filename, bbox_inches='tight', format='pdf')
     print(f"Wrote output to '{filename}'")
 
@@ -33,7 +40,7 @@ def exportToPdf(fig, filename):
 
 def extractPingLatencies(args):
     """
-    Expecting the input JSON file location. This file should contain RIPE Atlas Ping Measurements
+    Expecting the input CSV file location. This file should contain RIPE Atlas Ping Measurements
     Extracting the min,max,average latencies
     Returing the result as pandas data frame.
     """
@@ -100,13 +107,34 @@ def plotPingLatencyCDF(args):
 
     print('Plotting Ping Latency CDF')
 
-    data = extractPingLatencies(args)
+    # data = extractPingLatencies(args)
+    data = pd.read_csv(args.input[0])
 
     fig, ax = plt.subplots()
 
-    sns.kdeplot(data=data["avg"], cumulative=True, label="Avg. RTT")
-    sns.kdeplot(data=data["min"], cumulative=True, label="Min. RTT")
-    sns.kdeplot(data=data["max"], cumulative=True, label="Max. RTT")
+    test_data = data.loc[data["Continent"] == "ME"]
+    test_data = test_data.loc[data["Technology"] == "WIFI"]
+    test_data = test_data.loc[data["Avg"] > 0]
+    microsoft = test_data.loc[data["Datacenter Company"] == "MICROSOFT"]
+    print(test_data.to_markdown())
+    print(f"{len(test_data)}")
+    # exit(1)
+
+    sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
+    sns.kdeplot(data=microsoft["Min"], cumulative=True, label="Microsoft Min. RTT")
+    sns.kdeplot(data=microsoft["Max"], cumulative=True, label="Microsoft Max. RTT")
+
+    google = test_data.loc[data["Datacenter Company"] == "GOOGLE"]
+
+    sns.kdeplot(data=google["Avg"], cumulative=True, label="Google Avg. RTT")
+    sns.kdeplot(data=google["Min"], cumulative=True, label="Google Min. RTT")
+    sns.kdeplot(data=google["Max"], cumulative=True, label="Google Max. RTT")
+
+    amazon = test_data.loc[data["Datacenter Company"] == "AMAZON"]
+
+    sns.kdeplot(data=amazon["Avg"], cumulative=True, label="Amazon Avg. RTT")
+    sns.kdeplot(data=amazon["Min"], cumulative=True, label="Amazon Min. RTT")
+    sns.kdeplot(data=amazon["Max"], cumulative=True, label="Amazon Max. RTT")
 
     plt.legend(title="RTT type", loc="upper left")
     plt.xlabel('RTT [ms]')
@@ -148,9 +176,9 @@ def plotLocationMap(inputs, output):
 if __name__ == '__main__':
     parser = ArgumentParser(description='Generate CDF plots to compare the ping latency')
     parser.add_argument('-i','--input', action="append", default=[], required=True, help="The path to the JSON file containg the latency information")
-    parser.add_argument('-o','--output', type=str, default="pingRTT.pdf", help="The file in which the resulting plot is stored")
+    parser.add_argument('-o','--output', type=str, default="results/ping/pingRTT.pdf", help="The file in which the resulting plot is stored")
 
     args = parser.parse_args()
 
-    # plotPingLatencyCDF(args)
-    plotLocationMap(args.input, "map.pdf")
+    plotPingLatencyCDF(args)
+    # plotLocationMap(args.input, "map.pdf")
