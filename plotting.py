@@ -1,4 +1,6 @@
 import os
+import time
+import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -95,6 +97,21 @@ def extractGeolocation(inputs, location_file):
     # print(locations)
     return locations
 
+def convertTimestampToTime(timestamp):
+    """
+    Expecting a timestamp as input
+    Returning the converted timestamp as HH:MM:SS
+    """
+    return time.strftime("%H:%M", time.gmtime(timestamp))
+
+def filterDay(dataframe):
+    # TODO:
+    return dataframe
+
+def filterNight(dataframe):
+    # TODO:
+    return dataframe
+
 # --------------------------------------------------------------------------
 # PLOTTING
 # --------------------------------------------------------------------------
@@ -116,8 +133,11 @@ def plotPingLatencyCDF(args):
     test_data = test_data.loc[data["Technology"] == "WIFI"]
     test_data = test_data.loc[data["Avg"] > 0]
     microsoft = test_data.loc[data["Datacenter Company"] == "MICROSOFT"]
-    print(test_data.to_markdown())
-    print(f"{len(test_data)}")
+    # microsoft["Timestamp"] = pd.to_datetime(microsoft["Timestamp"], format="%Y%m%d")
+    # print(microsoft.to_markdown())
+    # print(f"{len(test_data)}")
+    # print(f"{microsoft.iloc[0]['Timestamp']}")
+    print(f"Time conversion {convertTimestampToTime(microsoft.iloc[0]['Timestamp'])}")
     # exit(1)
 
     sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
