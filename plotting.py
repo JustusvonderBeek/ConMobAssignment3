@@ -129,8 +129,9 @@ def plotPingLatencyCDF(args):
 
     fig, ax = plt.subplots()
 
-    test_data = data.loc[data["Continent"] == "ME"]
-    test_data = test_data.loc[data["Technology"] == "WIFI"]
+    # test_data = data.loc[data["Continent"] == "ME"]
+    test_data = data.loc[data["Technology"] == "WIFI"]
+    # test_data = test_data.loc[data["Technology"] == "WIFI"]
     test_data = test_data.loc[data["Avg"] > 0]
     microsoft = test_data.loc[data["Datacenter Company"] == "MICROSOFT"]
     # microsoft["Timestamp"] = pd.to_datetime(microsoft["Timestamp"], format="%Y%m%d")
@@ -163,6 +164,18 @@ def plotPingLatencyCDF(args):
     plt.grid("both")
 
     exportToPdf(fig, args.output)
+
+    # Trying a boxplot
+    fig, ax = plt.subplots()
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/boxplot.pdf")
+
 
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
