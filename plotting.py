@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import datetime
 
@@ -97,13 +98,6 @@ def extractGeolocation(inputs, location_file):
     # print(locations)
     return locations
 
-def convertTimestampToTime(timestamp):
-    """
-    Expecting a timestamp as input
-    Returning the converted timestamp as HH:MM:SS
-    """
-    return time.strftime("%H:%M", time.gmtime(timestamp))
-
 def convertTimestampToWeekday(timestamp):
     """
     Expecting a timestamp as input
@@ -111,19 +105,44 @@ def convertTimestampToWeekday(timestamp):
     """
     return time.strftime("%a", time.gmtime(timestamp))
 
+def parseTime(timestamp):
+    """
+    Expecting a string timestamp like '10:12'.
+    Returning datetime
+    """
+    hour = int(re.findall("([\d]+):", timestamp)[0])
+    min = int(re.findall(":([\d]+)", timestamp)[0])
+    return datetime.time(hour=hour, minute=min)
+
+def timeInRange(test_time, start, end):
+    # test_time = pd.to_datetime(test_time, unit="s")
+    if start <= end:
+        if start.hour == test_time.hour:
+            return start.minute <= test_time.minute
+        elif end.hour == test_time.hour:
+            return test_time.minute <= end.minute
+        return start.hour < test_time.hour < end.hour
+    else:
+        if start.hour == test_time.hour:
+            return start.minute <= test_time.minute
+        elif end.hour == test_time.hour:
+            return test_time.hour <= end.minute
+        return start.hour <= test_time.hour or test_time.hour <= end.hour
+
 def filterTimeOfDay(dataframe, start, end):
     """
     Expecting the PING measurement data and the time interval which should be filtered.
     Returning the filtered DataFrame where PINGs happened only within the interval.
     """
 
-    start = datetime.time(int(start))
-    end = datetime.time(int(end))
-    print(f"{start}")
-    dataframe["Time"] = dataframe["Timestamp"].apply(convertTimestampToTime)
+    start = parseTime(start)
+    end = parseTime(end)
+    # print(f"{start.hour}")
+
+    dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
     # print(f"{dataframe['Time']}")
-    dataframe = dataframe.loc[dataframe["Time"] ]
-    exit(1)
+    dataframe = dataframe.loc[dataframe["Time"].apply(timeInRange, args=(start, end))]
+    # print(f"{dataframe.to_markdown()}")
 
     return dataframe
 
@@ -188,7 +207,7 @@ def plotPingLatencyCDF(args):
     # print(f"{len(test_data)}")
     # print(f"{microsoft.iloc[0]['Timestamp']}")
     print(f"Time conversion {convertTimestampToTime(microsoft.iloc[0]['Timestamp'])}")
-    filterTimeOfDay(test_data, "12:00", "14:00")
+    filterTimeOfDay(test_data, "06:00", "08:00")
     # exit(1)
 
     sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
