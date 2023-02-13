@@ -104,13 +104,62 @@ def convertTimestampToTime(timestamp):
     """
     return time.strftime("%H:%M", time.gmtime(timestamp))
 
-def filterDay(dataframe):
-    # TODO:
+def convertTimestampToWeekday(timestamp):
+    """
+    Expecting a timestamp as input
+    Returning the converted timestamp as Weekday
+    """
+    return time.strftime("%a", time.gmtime(timestamp))
+
+def filterTimeOfDay(dataframe, start, end):
+    """
+    Expecting the PING measurement data and the time interval which should be filtered.
+    Returning the filtered DataFrame where PINGs happened only within the interval.
+    """
+
+    start = datetime.time(int(start))
+    end = datetime.time(int(end))
+    print(f"{start}")
+    dataframe["Time"] = dataframe["Timestamp"].apply(convertTimestampToTime)
+    # print(f"{dataframe['Time']}")
+    dataframe = dataframe.loc[dataframe["Time"] ]
+    exit(1)
+
     return dataframe
 
-def filterNight(dataframe):
-    # TODO:
-    return dataframe
+def filterInvalid(dataframe):
+    """
+    This method can be used to filter invalid PINGs from the DataFrame.
+    """
+
+    # Currently we only filter pings that did not reached the destination
+    return dataframe.loc[dataframe["Avg"] > 0]
+
+def filterAccessTechnology(dataframe, technology):
+    """
+    Expecting the PING measurement data and the access technology.
+    Returning the filtered DataFrame where PINGs used the given technology.
+    """
+
+    return dataframe.loc[dataframe["Technology"] == technology]
+
+def filterIntraContinent(dataframe, continent):
+    """
+    Expecting the PING measurement data and the continent as input.
+    Returning the filtered DataFrame where connections only go from CONTINENT -> CONTINENT.
+    """
+
+    dataframe = dataframe.loc[dataframe["Continent"] == continent]
+    return data.loc[dataframe["Datacenter Continent"] == continent]
+
+def filterInterContinent(dataframe, source, dest):
+    """
+    Expecting the PING measurement data and the source and destination continent as input.
+    Returning the filtered DataFrame where connections go from SOURCE -> DEST.
+    """
+
+    dataframe = dataframe.loc[dataframe["Continent"] == source]
+    return dataframe.loc[dataframe["Datacenter Continent"] == dest]
 
 # --------------------------------------------------------------------------
 # PLOTTING
@@ -125,7 +174,7 @@ def plotPingLatencyCDF(args):
     print('Plotting Ping Latency CDF')
 
     # data = extractPingLatencies(args)
-    data = pd.read_csv(args.input[0])
+    data = pd.read_csv(args.input[0], na_filter=False)
 
     fig, ax = plt.subplots()
 
@@ -139,6 +188,7 @@ def plotPingLatencyCDF(args):
     # print(f"{len(test_data)}")
     # print(f"{microsoft.iloc[0]['Timestamp']}")
     print(f"Time conversion {convertTimestampToTime(microsoft.iloc[0]['Timestamp'])}")
+    filterTimeOfDay(test_data, "12:00", "14:00")
     # exit(1)
 
     sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
@@ -168,13 +218,86 @@ def plotPingLatencyCDF(args):
     # Trying a boxplot
     fig, ax = plt.subplots()
 
+    test_data = test_data.loc[test_data["Continent"] == "ME"]
+    test_data = test_data.loc[test_data["Datacenter Continent"] == "ME"]
+
     sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
 
     # Styling the plot
     ax.set_axisbelow(True)
     plt.grid(axis="y")
 
-    exportToPdf(fig, "results/ping/boxplot.pdf")
+    exportToPdf(fig, "results/ping/wifi_me.pdf")
+
+    fig, ax = plt.subplots()
+
+    test_data = data.loc[data["Technology"] == "WIFI"]
+    test_data = test_data.loc[data["Avg"] > 0]
+    test_data = test_data.loc[test_data["Continent"] == "EU"]
+    test_data = test_data.loc[test_data["Datacenter Continent"] == "EU"]
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/wifi_eu.pdf")
+
+    fig, ax = plt.subplots()
+
+    test_data = data.loc[data["Technology"] == "WIFI"]
+    test_data = test_data.loc[data["Avg"] > 0]
+    test_data = test_data.loc[test_data["Continent"] == "EU"]
+    test_data = test_data.loc[test_data["Datacenter Continent"] == "NA"]
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/wifi_eu_na.pdf")
+
+    test_data = data.loc[data["Technology"] == "CELLULAR"]
+    test_data = test_data.loc[data["Avg"] > 0]
+
+    fig, ax = plt.subplots()
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/cell.pdf")
+
+    test_data = data.loc[data["Technology"] == "SATELLITE"]
+    test_data = test_data.loc[data["Avg"] > 0]
+
+    fig, ax = plt.subplots()
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/sat.pdf")
+
+    test_data = data.loc[data["Technology"] == "LAN"]
+    test_data = test_data.loc[data["Avg"] > 0]
+
+    fig, ax = plt.subplots()
+
+    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
+
+    # Styling the plot
+    ax.set_axisbelow(True)
+    ax.set_yscale("log")
+    plt.grid(axis="y")
+
+    exportToPdf(fig, "results/ping/lan.pdf")
 
 
 # Adapted from: 
