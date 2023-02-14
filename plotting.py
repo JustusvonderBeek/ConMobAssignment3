@@ -307,129 +307,15 @@ def plotPingLatencyCDF(args):
     
     plotQuadAccessTechnology(wifi, "WIFI")
 
-    return
+    cell = filterAccessTechnology(valid_pings, "CELLULAR")
+    plotQuadAccessTechnology(cell, "CELLULAR")
     
-    # test_data = data.loc[data["Continent"] == "ME"]
-    test_data = data.loc[data["Technology"] == "WIFI"]
-    # test_data = test_data.loc[data["Technology"] == "WIFI"]
-    test_data = test_data.loc[data["Avg"] > 0]
-    microsoft = test_data.loc[data["Datacenter Company"] == "MICROSOFT"]
-    # microsoft["Timestamp"] = pd.to_datetime(microsoft["Timestamp"], format="%Y%m%d")
-    # print(microsoft.to_markdown())
-    # print(f"{len(test_data)}")
-    # print(f"{microsoft.iloc[0]['Timestamp']}")
-    # filterTimeOfDay(test_data, "06:00", "08:00")
-    # 
-    # filterDays(test_data, ["Fri", "Sat", "Sun"])
-
-    sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
-    sns.kdeplot(data=microsoft["Min"], cumulative=True, label="Microsoft Min. RTT")
-    sns.kdeplot(data=microsoft["Max"], cumulative=True, label="Microsoft Max. RTT")
-
-    google = test_data.loc[data["Datacenter Company"] == "GOOGLE"]
-
-    sns.kdeplot(data=google["Avg"], cumulative=True, label="Google Avg. RTT")
-    sns.kdeplot(data=google["Min"], cumulative=True, label="Google Min. RTT")
-    sns.kdeplot(data=google["Max"], cumulative=True, label="Google Max. RTT")
-
-    amazon = test_data.loc[data["Datacenter Company"] == "AMAZON"]
-
-    sns.kdeplot(data=amazon["Avg"], cumulative=True, label="Amazon Avg. RTT")
-    sns.kdeplot(data=amazon["Min"], cumulative=True, label="Amazon Min. RTT")
-    sns.kdeplot(data=amazon["Max"], cumulative=True, label="Amazon Max. RTT")
-
-    plt.legend(title="RTT type", loc="upper left")
-    plt.xlabel('RTT [ms]')
-    plt.ylabel('CDF')
-    plt.title("CDF of Ping RTT")
-    plt.grid("both")
-
-    exportToPdf(fig, args.output)
-
-    # Trying a boxplot
-    fig, ax = plt.subplots()
-
-    test_data = test_data.loc[test_data["Continent"] == "ME"]
-    test_data = test_data.loc[test_data["Datacenter Continent"] == "ME"]
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/wifi_me.pdf")
-
-    fig, ax = plt.subplots()
-
-    test_data = data.loc[data["Technology"] == "WIFI"]
-    test_data = test_data.loc[data["Avg"] > 0]
-    test_data = test_data.loc[test_data["Continent"] == "EU"]
-    test_data = test_data.loc[test_data["Datacenter Continent"] == "EU"]
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/wifi_eu.pdf")
-
-    fig, ax = plt.subplots()
-
-    test_data = data.loc[data["Technology"] == "WIFI"]
-    test_data = test_data.loc[data["Avg"] > 0]
-    test_data = test_data.loc[test_data["Continent"] == "EU"]
-    test_data = test_data.loc[test_data["Datacenter Continent"] == "NA"]
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/wifi_eu_na.pdf")
-
-    test_data = data.loc[data["Technology"] == "CELLULAR"]
-    test_data = test_data.loc[data["Avg"] > 0]
-
-    fig, ax = plt.subplots()
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/cell.pdf")
-
-    test_data = data.loc[data["Technology"] == "SATELLITE"]
-    test_data = test_data.loc[data["Avg"] > 0]
-
-    fig, ax = plt.subplots()
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/sat.pdf")
-
-    test_data = data.loc[data["Technology"] == "LAN"]
-    test_data = test_data.loc[data["Avg"] > 0]
-
-    fig, ax = plt.subplots()
-
-    sns.boxplot(data=test_data, x="Continent", y="Avg", hue="Datacenter Company")
-
-    # Styling the plot
-    ax.set_axisbelow(True)
-    ax.set_yscale("log")
-    plt.grid(axis="y")
-
-    exportToPdf(fig, "results/ping/lan.pdf")
-
+    sat = filterAccessTechnology(valid_pings, "SATELLITE")
+    plotQuadAccessTechnology(sat, "SATELLITE")
+    
+    lan = filterAccessTechnology(valid_pings, "LAN")
+    plotQuadAccessTechnology(lan, "LAN")
+    
 
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
