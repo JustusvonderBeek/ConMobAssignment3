@@ -358,13 +358,17 @@ def plotPingLatencyLineplot(args):
     data = pd.read_csv(args.input[0], na_filter=False)
     # Perform some pre-filtering
     valid_pings = filterInvalid(data)
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == "EU"]
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
     # Comparing Wifi Across the Globe with LAN
     wifi = filterAccessTechnology(valid_pings, "WIFI")
 
     fig, ax = plt.subplots()
-    sns.lineplot(data=wifi, x="Timestamp", y="Avg", hue="Continent")
+    sns.lineplot(data=wifi[::15], x="Timestamp", y="Avg", hue="Continent")
 
-    exportToPdf(fig, "results/ping/lineplot.pdf", width=12, height=10)
+    ax.grid("both")
+
+    exportToPdf(fig, "results/ping/lineplot.pdf", width=8, height=6)
 
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
@@ -402,7 +406,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    plotPingLatencyBoxplot(args)
-    plotPingInterLatencyBoxplot(args)
-    # plotPingLatencyLineplot(args)
+    # plotPingLatencyBoxplot(args)
+    # plotPingInterLatencyBoxplot(args)
+    plotPingLatencyLineplot(args)
     # plotLocationMap(args.input, "map.pdf")
