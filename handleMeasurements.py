@@ -3,11 +3,13 @@ import json
 import os
 import concurrent.futures
 import ast
+import socket
 import pandas as pd
 
 from argparse import ArgumentParser
 from collections import defaultdict
 from tqdm import tqdm
+from cymruwhois import Client
 
 # --------------------------------------------------------------------------
 # DEFINITIONS
@@ -200,14 +202,14 @@ def addPingInformation(id, dst, file_dict):
     return technology, loc, country, continent, dc_comp, dc_cont
     
 
-def extractPingMeasureInformation(input_json, id_list, file_dict):
+def extractPingMeasureInformation(input_json, id_list, measure_id, file_dict):
     """
     Expecting a json object list and the individual probe IDs.
     Combining measures based on the time of the day. E.g. measures at 2 p.m are combined.
     Returning a pandas DataFrame.
     """
 
-    columns = ["Measurement", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Min", "Max", "Avg", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
+    columns = ["Measurement", "Measurement ID", "Probe ID", "Technology", "Timestamp", "Sent", "Received", "Latency", "Min", "Max", "Avg", "Src", "Dst", "Location", "Country", "Continent", "Datacenter Company", "Datacenter Continent"]
     data = pd.DataFrame(columns=columns)
     # print(data)
 
@@ -219,7 +221,7 @@ def extractPingMeasureInformation(input_json, id_list, file_dict):
         datapoints = list()
         for test in id_measures:
             latency = filterJsonList(test["result"], "rtt")
-            datapoints.append({"Measurement": "Ping", "Probe ID": id, "Technology": technology, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Min": test["min"], "Max": test["max"], "Avg": test["avg"], "Src": test["src_addr"], "Dst": test["dst_addr"], "Location": location, "Country": country, "Continent": continent, "Datacenter Company": dc, "Datacenter Continent": dc_continent})
+            datapoints.append({"Measurement": "Ping", "Measurement ID": measure_id, "Probe ID": id, "Technology": technology, "Timestamp": test["timestamp"], "Sent": test["sent"], "Received": test["rcvd"], "Latency": latency, "Min": test["min"], "Max": test["max"], "Avg": test["avg"], "Src": test["src_addr"], "Dst": test["dst_addr"], "Location": location, "Country": country, "Continent": continent, "Datacenter Company": dc, "Datacenter Continent": dc_continent})
 
         # print(datapoints)
         data = pd.concat([pd.DataFrame(datapoints), data], ignore_index=True)
@@ -242,10 +244,14 @@ def pingMeasureToDataFrame(id, file_dict):
     # See: https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     ping = requests.get(id_url, timeout=default_timeout)
     ping = ping.json()
+    # if id == 49857256:
+    #     tqdm.write(f"{len(ping)}")
+    #     with open("measurements/ping/large_measure.json", "w") as json_dump:
+    #         json.dump(ping, json_dump, indent=2)
     # print(ping)
     involved_probes = filterJsonList(ping, "prb_id")
     # print(involved_probes)
-    data = extractPingMeasureInformation(ping, involved_probes, file_dict)
+    data = extractPingMeasureInformation(ping, involved_probes, id, file_dict)
 
     return data
 
@@ -298,6 +304,12 @@ def extractTraceMeasureInformation(trace, prbs, file_dict):
     Expecting the trace measurement JSON and the involved probes.
     Returning a valid DataFrame containg the measurement information.
     """
+
+    domain = "google.de"
+    ip = socket.gethostbyname(domain)
+    c = Client()
+    r = c.lookup(ip)
+    print(f"Owner: {r.owner}")
 
     return None
 
@@ -359,4 +371,5 @@ if __name__ == '__main__':
         # Extract the PING CSV Table; already stores the result in the given file
         ping_data = rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
 
-        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
+        # TODO: Fetch traceroute measurements
+        # trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
