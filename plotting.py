@@ -132,12 +132,13 @@ def filterTimeOfDay(dataframe, start, end):
     end = parseTime(end)
     # print(f"{start.hour}")
 
-    dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
+    df = dataframe.copy()
+    df["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
     # print(f"{dataframe['Time']}")
-    dataframe = dataframe.loc[dataframe["Time"].apply(timeInRange, args=(start, end))].copy()
+    df = df.loc[df["Time"].apply(timeInRange, args=(start, end))]
     # print(f"{dataframe.to_markdown()}")
 
-    return dataframe
+    return df
 
 def convertStringDayToWeekday(day):
     """
@@ -169,14 +170,15 @@ def filterDays(dataframe, days):
     Returning the filtered DataFrame.
     """
 
-    dataframe["Weekday"] = dataframe["Timestamp"].apply(lambda x: time.gmtime(x).tm_wday)
+    df = dataframe
+    df["Weekday"] = df["Timestamp"].apply(lambda x: time.gmtime(x).tm_wday)
     # print(f"{dataframe['Weekday']}")
     days = list(map(convertStringDayToWeekday, days))
     # print(f"{days}")
-    dataframe = dataframe.loc[dataframe["Weekday"].apply(lambda x: x in days)]
+    df = df.loc[df["Weekday"].apply(lambda x: x in days)]
     # print(f"{dataframe.to_markdown()}")
 
-    return dataframe
+    return df
 
 def filterInvalid(dataframe):
     """
@@ -192,7 +194,7 @@ def filterAccessTechnology(dataframe, technology):
     Returning the filtered DataFrame where PINGs used the given technology.
     """
 
-    return dataframe.loc[dataframe["Technology"] == technology]
+    return dataframe.loc[dataframe["Technology"] == technology].copy()
 
 def filterIntraContinent(dataframe, continent):
     """
@@ -200,8 +202,8 @@ def filterIntraContinent(dataframe, continent):
     Returning the filtered DataFrame where connections only go from CONTINENT -> CONTINENT.
     """
 
-    dataframe = dataframe.loc[dataframe["Continent"] == continent]
-    return data.loc[dataframe["Datacenter Continent"] == continent]
+    df = dataframe.loc[dataframe["Continent"] == continent]
+    return df.loc[df["Datacenter Continent"] == continent]
 
 def filterInterContinent(dataframe, source, dest):
     """
@@ -209,8 +211,8 @@ def filterInterContinent(dataframe, source, dest):
     Returning the filtered DataFrame where connections go from SOURCE -> DEST.
     """
 
-    dataframe = dataframe.loc[dataframe["Continent"] == source]
-    return dataframe.loc[dataframe["Datacenter Continent"] == dest]
+    df = dataframe.loc[dataframe["Continent"] == source].copy()
+    return df.loc[df["Datacenter Continent"] == dest]
 
 def filterDaytimeWeekday(dataframe):
     dataframe = filterDays(dataframe, ["Mon", "Tue", "Wed", "Thu", "Fri"])
@@ -237,7 +239,7 @@ def filterNighttimeWeekend(dataframe):
 # PLOTTING
 # --------------------------------------------------------------------------
 
-def plotQuadAccessTechnology(raw_data, technology):
+def plotQuadAccessTechnology(raw_data, technology, prefix=""):
     """
     Expecting an access technology like "WIFI" and the filtered data on this technology data["Technology"] == "<Tech>"
     Plotting and saving the technology to disk.
@@ -286,15 +288,15 @@ def plotQuadAccessTechnology(raw_data, technology):
     axes[1,1].legend(title="Datacenter", loc="upper right")
     axes[1,1].set_title(f"{technology} Ping Latency (Sat-Sun, 20:00-08:00)")
 
-    exportToPdf(fig, f"results/ping/{technology}.pdf", width=16, height=12)
+    exportToPdf(fig, f"results/ping/{prefix}{technology}.pdf", width=16, height=12)
 
-def plotPingLatencyCDF(args):
+def plotPingLatencyBoxplot(args):
     """
     Expecting the parsed command line containing input and output file information.
     Parsing the measurement results and plotting the CDF for latencies.
     """
 
-    print('Plotting Ping Latency CDF')
+    print('Plotting Ping Latency Boxplot')
 
     # data = extractPingLatencies(args)
     data = pd.read_csv(args.input[0], na_filter=False)
@@ -302,8 +304,8 @@ def plotPingLatencyCDF(args):
     # Perform some pre-filtering
     valid_pings = filterInvalid(data)
     # Comparing Wifi Across the Globe with LAN
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
     wifi = filterAccessTechnology(valid_pings, "WIFI")
-    lan = filterAccessTechnology(valid_pings, "LAN")
     
     plotQuadAccessTechnology(wifi, "WIFI")
 
@@ -316,6 +318,53 @@ def plotPingLatencyCDF(args):
     lan = filterAccessTechnology(valid_pings, "LAN")
     plotQuadAccessTechnology(lan, "LAN")
     
+def plotPingInterLatencyBoxplot(args):
+    """
+    Expecting the parsed command line containing input and output file information.
+    Parsing the measurement results and plotting the CDF for latencies.
+    """
+
+    print('Plotting Ping Latency Inter Continent Boxplot')
+
+    # data = extractPingLatencies(args)
+    data = pd.read_csv(args.input[0], na_filter=False)
+
+    # Perform some pre-filtering
+    valid_pings = filterInvalid(data)
+    # Comparing Wifi Across the Globe with LAN
+    valid_pings = valid_pings.loc[valid_pings["Continent"] != valid_pings["Datacenter Continent"]]
+    
+    wifi = filterAccessTechnology(valid_pings, "WIFI")
+    plotQuadAccessTechnology(wifi, "WIFI", prefix="inter_")
+
+    cell = filterAccessTechnology(valid_pings, "CELLULAR")
+    plotQuadAccessTechnology(cell, "CELLULAR", prefix="inter_")
+    
+    sat = filterAccessTechnology(valid_pings, "SATELLITE")
+    plotQuadAccessTechnology(sat, "SATELLITE", prefix="inter_")
+    
+    lan = filterAccessTechnology(valid_pings, "LAN")
+    plotQuadAccessTechnology(lan, "LAN", prefix="inter_")
+
+def plotPingLatencyLineplot(args):
+    """
+    Expecting the parsed command line containing input and output file information.
+    Parsing the measurement results and plotting the CDF for latencies.
+    """
+
+    print('Plotting Ping Latency Lineplot')
+
+    # data = extractPingLatencies(args)
+    data = pd.read_csv(args.input[0], na_filter=False)
+    # Perform some pre-filtering
+    valid_pings = filterInvalid(data)
+    # Comparing Wifi Across the Globe with LAN
+    wifi = filterAccessTechnology(valid_pings, "WIFI")
+
+    fig, ax = plt.subplots()
+    sns.lineplot(data=wifi, x="Timestamp", y="Avg", hue="Continent")
+
+    exportToPdf(fig, "results/ping/lineplot.pdf", width=12, height=10)
 
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
@@ -353,5 +402,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    plotPingLatencyCDF(args)
+    plotPingLatencyBoxplot(args)
+    plotPingInterLatencyBoxplot(args)
+    # plotPingLatencyLineplot(args)
     # plotLocationMap(args.input, "map.pdf")
