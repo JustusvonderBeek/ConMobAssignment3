@@ -98,13 +98,6 @@ def extractGeolocation(inputs, location_file):
     # print(locations)
     return locations
 
-def convertTimestampToWeekday(timestamp):
-    """
-    Expecting a timestamp as input
-    Returning the converted timestamp as Weekday
-    """
-    return time.strftime("%a", time.gmtime(timestamp))
-
 def parseTime(timestamp):
     """
     Expecting a string timestamp like '10:12'.
@@ -142,6 +135,45 @@ def filterTimeOfDay(dataframe, start, end):
     dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
     # print(f"{dataframe['Time']}")
     dataframe = dataframe.loc[dataframe["Time"].apply(timeInRange, args=(start, end))]
+    # print(f"{dataframe.to_markdown()}")
+
+    return dataframe
+
+def convertStringDayToWeekday(day):
+    """
+    Converts a string day to a python time_struct weekday number.
+    Necessary because the output of "%a" in gmtime depends on the system language!
+    """
+    if day == "Mon":
+        return 0
+    elif day == "Tue":
+        return 1
+    elif day == "Wed":
+        return 2
+    elif day == "Thu":
+        return 3
+    elif day == "Fri":
+        return 4
+    elif day == "Sat":
+        return 5
+    elif day == "Sun":
+        return 6
+    else:
+        print(f"Unknown day {day}!")
+    return -1
+
+def filterDays(dataframe, days):
+    """
+    Expecting the PING measurement data and a list of weekdays in string format, e.g. 'Sun'.
+    weekdays = ["Mon", "Tue", "Thu", "Wed", "Fri", "Sat", "Sun"]
+    Returning the filtered DataFrame.
+    """
+
+    dataframe["Weekday"] = dataframe["Timestamp"].apply(lambda x: time.gmtime(x).tm_wday)
+    # print(f"{dataframe['Weekday']}")
+    days = list(map(convertStringDayToWeekday, days))
+    # print(f"{days}")
+    dataframe = dataframe.loc[dataframe["Weekday"].apply(lambda x: x in days)]
     # print(f"{dataframe.to_markdown()}")
 
     return dataframe
@@ -206,9 +238,9 @@ def plotPingLatencyCDF(args):
     # print(microsoft.to_markdown())
     # print(f"{len(test_data)}")
     # print(f"{microsoft.iloc[0]['Timestamp']}")
-    print(f"Time conversion {convertTimestampToTime(microsoft.iloc[0]['Timestamp'])}")
-    filterTimeOfDay(test_data, "06:00", "08:00")
-    # exit(1)
+    # filterTimeOfDay(test_data, "06:00", "08:00")
+    # 
+    # filterDays(test_data, ["Fri", "Sat", "Sun"])
 
     sns.kdeplot(data=microsoft["Avg"], cumulative=True, label="Microsoft Avg. RTT")
     sns.kdeplot(data=microsoft["Min"], cumulative=True, label="Microsoft Min. RTT")
