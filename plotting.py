@@ -20,14 +20,14 @@ from geopandas import GeoDataFrame
 # HELPERS
 # --------------------------------------------------------------------------
 
-def exportToPdf(fig, filename):
+def exportToPdf(fig, filename, width=8, height=6):
     """
     Exports the current plot to file. Both in the 10:6 and 8:6 format (for thesis and slides.
     """
 
     # Saving to 8:6 format (no name change)
-    fig.set_figwidth(8)
-    fig.set_figheight(6)
+    fig.set_figwidth(width)
+    fig.set_figheight(height)
 
     # Check if folder exists and create the path if failed
     dirname, fname = os.path.split(filename)
@@ -134,7 +134,7 @@ def filterTimeOfDay(dataframe, start, end):
 
     dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
     # print(f"{dataframe['Time']}")
-    dataframe = dataframe.loc[dataframe["Time"].apply(timeInRange, args=(start, end))]
+    dataframe = dataframe.loc[dataframe["Time"].apply(timeInRange, args=(start, end))].copy()
     # print(f"{dataframe.to_markdown()}")
 
     return dataframe
@@ -184,7 +184,7 @@ def filterInvalid(dataframe):
     """
 
     # Currently we only filter pings that did not reached the destination
-    return dataframe.loc[dataframe["Avg"] > 0]
+    return dataframe.loc[dataframe["Avg"] > 0].copy()
 
 def filterAccessTechnology(dataframe, technology):
     """
@@ -212,9 +212,81 @@ def filterInterContinent(dataframe, source, dest):
     dataframe = dataframe.loc[dataframe["Continent"] == source]
     return dataframe.loc[dataframe["Datacenter Continent"] == dest]
 
+def filterDaytimeWeekday(dataframe):
+    dataframe = filterDays(dataframe, ["Mon", "Tue", "Wed", "Thu", "Fri"])
+    dataframe = filterTimeOfDay(dataframe, "08:00", "20:00")
+    return dataframe
+
+def filterNighttimeWeekday(dataframe):
+    dataframe = filterDays(dataframe, ["Mon", "Tue", "Wed", "Thu", "Fri"])
+    dataframe = filterTimeOfDay(dataframe, "20:00", "08:00")
+    return dataframe
+
+def filterDaytimeWeekend(dataframe):
+    dataframe = filterDays(dataframe, ["Sat", "Sun"])
+    dataframe = filterTimeOfDay(dataframe, "08:00", "20:00")
+    return dataframe
+
+def filterNighttimeWeekend(dataframe):
+    dataframe = filterDays(dataframe, ["Sat", "Sun"])
+    dataframe = filterTimeOfDay(dataframe, "20:00", "08:00")
+    return dataframe
+
+
 # --------------------------------------------------------------------------
 # PLOTTING
 # --------------------------------------------------------------------------
+
+def plotQuadAccessTechnology(raw_data, technology):
+    """
+    Expecting an access technology like "WIFI" and the filtered data on this technology data["Technology"] == "<Tech>"
+    Plotting and saving the technology to disk.
+    """
+
+    weekday_day = filterDaytimeWeekday(raw_data)
+
+    # PLOTTING
+    fig, axes = plt.subplots(2,2)
+    sns.boxplot(data=weekday_day, x="Continent", y="Avg", hue="Datacenter Company", ax=axes[0,0])
+    
+    # Styling the plot
+    axes[0,0].set_axisbelow(True)
+    axes[0,0].set_ylim(ymin=0, ymax=800)
+    axes[0,0].grid(axis="y")
+    axes[0,0].legend(title="Datacenter", loc="upper right")
+    axes[0,0].set_title(f"{technology} Ping Latency (Mon-Fri, 08:00-20:00)")
+
+    weekday_night = filterNighttimeWeekday(raw_data)
+
+    sns.boxplot(data=weekday_night, x="Continent", y="Avg", hue="Datacenter Company", ax=axes[0,1])
+
+    axes[0,1].grid(axis="y")
+    axes[0,1].set_axisbelow(True)
+    axes[0,1].set_ylim(ymin=0, ymax=800)
+    axes[0,1].legend(title="Datacenter", loc="upper right")
+    axes[0,1].set_title(f"{technology} Ping Latency (Mon-Fri, 20:00-08:00)")
+
+    weekend_day = filterDaytimeWeekend(raw_data)
+
+    sns.boxplot(data=weekend_day, x="Continent", y="Avg", hue="Datacenter Company", ax=axes[1,0])
+
+    axes[1,0].set_axisbelow(True)
+    axes[1,0].set_ylim(ymin=0, ymax=800)
+    axes[1,0].grid(axis="y")
+    axes[1,0].legend(title="Datacenter", loc="upper right")
+    axes[1,0].set_title(f"{technology} Ping Latency (Sat-Sun, 08:00-20:00)")
+
+    weekend_night = filterNighttimeWeekend(raw_data)
+
+    sns.boxplot(data=weekend_night, x="Continent", y="Avg", hue="Datacenter Company", ax=axes[1,1])
+
+    axes[1,1].set_axisbelow(True)
+    axes[1,1].set_ylim(ymin=0, ymax=800)
+    axes[1,1].grid(axis="y")
+    axes[1,1].legend(title="Datacenter", loc="upper right")
+    axes[1,1].set_title(f"{technology} Ping Latency (Sat-Sun, 20:00-08:00)")
+
+    exportToPdf(fig, f"results/ping/{technology}.pdf", width=16, height=12)
 
 def plotPingLatencyCDF(args):
     """
@@ -227,8 +299,16 @@ def plotPingLatencyCDF(args):
     # data = extractPingLatencies(args)
     data = pd.read_csv(args.input[0], na_filter=False)
 
-    fig, ax = plt.subplots()
+    # Perform some pre-filtering
+    valid_pings = filterInvalid(data)
+    # Comparing Wifi Across the Globe with LAN
+    wifi = filterAccessTechnology(valid_pings, "WIFI")
+    lan = filterAccessTechnology(valid_pings, "LAN")
+    
+    plotQuadAccessTechnology(wifi, "WIFI")
 
+    return
+    
     # test_data = data.loc[data["Continent"] == "ME"]
     test_data = data.loc[data["Technology"] == "WIFI"]
     # test_data = test_data.loc[data["Technology"] == "WIFI"]
