@@ -9,6 +9,7 @@ import seaborn as sns
 import pandas as pd
 import json, scipy, ast
 import geopandas as gpd
+import matplotlib.dates as mdates
 
 from argparse import ArgumentParser
 from tqdm import tqdm
@@ -234,17 +235,17 @@ def filterNighttimeWeekend(dataframe):
     dataframe = filterTimeOfDay(dataframe, "20:00", "08:00")
     return dataframe
 
-def combineAroundTimepoint(dataframe, start, interval=2):
+def combineAroundTimepoint(dataframe, start="2023-02-09 19:00:00", interval="2h"):
     """
     Expecting the pre-filtered DataFrame. Combining PING measures at any given day in the interval.
     Returning the combined DataFrame.
     """
 
     dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
-    groupby = dataframe.groupby(pd.Grouper(key="Time", freq="2H", origin="2023-02-09 19:00:00"))
-    dataframe = groupby.mean(numeric_only=False)
+    groupby = dataframe.groupby(pd.Grouper(key="Time", freq=f"{interval}", origin=f"{start}"))
+    dataframe = groupby.mean(numeric_only=True)
 
-    print(f"{dataframe.to_markdown()}")
+    # print(f"{dataframe.to_markdown()}")
 
     return dataframe
 
@@ -302,6 +303,41 @@ def plotQuadAccessTechnology(raw_data, technology, prefix=""):
     axes[1,1].set_title(f"{technology} Ping Latency (Sat-Sun, 20:00-08:00)")
 
     exportToPdf(fig, f"results/ping/{prefix}{technology}.pdf", width=16, height=12)
+
+def plotLineplot(data, technology):
+    continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
+    # Perform some pre-filtering
+    valid_pings = filterInvalid(data)
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
+    # Comparing Wifi Across the Globe with LAN
+    tech = filterAccessTechnology(valid_pings, technology)
+
+    fig, ax = plt.subplots()
+    # From our measurement creation we started roughly around 18:40 at 09.02
+    # That means we gather 19:00 , 21:00 , 23:00, 01:00 , ... etc.
+    # The interval goes 18:00 - 20:00
+
+    for cont in continents:
+        filtered = tech.loc[tech["Continent"] == cont].copy()
+        if len(filtered) == 0:
+            continue
+        wifi = combineAroundTimepoint(filtered)
+        sns.lineplot(data=wifi, x="Time", y="Avg", markers=True, label=f"{cont}")
+
+    # Styling the graph
+    ax.yaxis.get_ticklocs(minor=True)
+    ax.minorticks_on()
+    ax.set_xticklabels(ax.get_xticklabels(), rotation="45", horizontalalignment='right')
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d.%m.%Y - %H:%M'))
+    ax.grid(visible=True, which="major")
+    ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":")
+    ax.set_ylim(ymin=0)
+    ax.set_ylabel("RTT [ms]")
+    ax.set_xlabel("Timestamp")
+    plt.title(f"{technology} Technology")
+    plt.legend(title="Continent", loc="upper left")
+
+    exportToPdf(fig, f"results/ping/{technology}_line.pdf", width=8, height=6)
 
 def plotPingLatencyBoxplot(args):
     """
@@ -367,28 +403,17 @@ def plotPingLatencyLineplot(args):
 
     print('Plotting Ping Latency Lineplot')
 
-    # data = extractPingLatencies(args)
     data = pd.read_csv(args.input[0], na_filter=False)
-    # Perform some pre-filtering
-    valid_pings = filterInvalid(data)
-    valid_pings = valid_pings.loc[valid_pings["Continent"] == "NA"]
-    valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
-    # Comparing Wifi Across the Globe with LAN
-    wifi = filterAccessTechnology(valid_pings, "WIFI")
+    
+    
+    plotLineplot(data, "WIFI")
 
-    fig, ax = plt.subplots()
-    # TODO: Combine measurements around timestamps
-    # From our measurement creation we started roughly around 18:40 at 09.02
-    # That means we gather 19:00 , 21:00 , 23:00, 01:00 , ... etc.
-    # The interval goes 18:00 - 20:00
-    wifi = combineAroundTimepoint(wifi, "19:00")
+    plotLineplot(data, "CELLULAR")
 
-    sns.lineplot(data=wifi, x="Time", y="Avg")
+    plotLineplot(data, "SATELLITE")
 
-    ax.grid("both")
-    ax.set_ylim(ymin=0, ymax=200)
+    plotLineplot(data, "LAN")
 
-    exportToPdf(fig, "results/ping/lineplot.pdf", width=8, height=6)
 
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
