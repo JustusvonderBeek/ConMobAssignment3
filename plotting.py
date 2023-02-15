@@ -15,7 +15,7 @@ from argparse import ArgumentParser
 from tqdm import tqdm
 from collections import defaultdict
 from shapely.geometry import Point
-from geopandas import GeoDataFrame
+from geopandas import GeoDataFrame, tools
 
 # --------------------------------------------------------------------------
 # HELPERS
@@ -98,6 +98,21 @@ def extractGeolocation(inputs, location_file):
 
     # print(locations)
     return locations
+
+def convertCityToLocation(input):
+    """
+    Expecting the datacenter file with City names.
+    Fetching the geolocation and returning a list of latitudes and longitudes.
+    """
+
+    df = pd.read_csv(input)
+    cities = list(df["Location"].unique())
+    locations = gpd.tools.geocode(cities)
+
+    # print(f"{locations}")
+
+    return locations
+
 
 def parseTime(timestamp):
     """
@@ -405,7 +420,6 @@ def plotPingLatencyLineplot(args):
 
     data = pd.read_csv(args.input[0], na_filter=False)
     
-    
     plotLineplot(data, "WIFI")
 
     plotLineplot(data, "CELLULAR")
@@ -415,30 +429,124 @@ def plotPingLatencyLineplot(args):
     plotLineplot(data, "LAN")
 
 
+def plotLatencyDifferences(inputs):
+    """
+    Plotting the differences between TODO
+    """
+
+    data = pd.read_csv(inputs[0], na_filter=False)
+    # Load the matching
+    matching = pd.read_csv("measurement_creation/wifi_lan_match.csv", index_col=None, na_filter=True)
+    wifi_ids = [x for x in matching["Wifi"] if not np.isnan(x) ]
+    lan_ids = [x for x in matching["Lan"] if not np.isnan(x) ]
+
+    print(f"Length: {len(wifi_ids)} vs. {len(lan_ids)}")
+    # print(f"{lan_ids}")
+
+    # Preparing the data by removing invalid and filter for inter-continent, wifi
+    valid_pings = filterInvalid(data)
+    valid_pings = valid_pings.loc[lambda x: x["Continent"] == x["Datacenter Continent"]]
+    valid_pings = valid_pings.loc[valid_pings["Datacenter Company"] == "MICROSOFT"]
+    wifi = filterAccessTechnology(valid_pings, "WIFI")
+    wifi = wifi.loc[wifi["Probe ID"].apply(lambda id: id in wifi_ids)]
+    lan = filterAccessTechnology(valid_pings, "LAN")
+    lan = lan.loc[lan["Probe ID"].apply(lambda id: id in lan_ids)]
+
+    # print(f"Length: {len(wifi.index)} vs. {len(lan.index)}")
+
+    # For each continent
+    avg_wifi = list()
+    missing_counter = 0
+    missing_ids = set()
+    continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
+    for continent in continents[0]:
+        wifi_cont = filterInterContinent(wifi, continent, continent)
+        # wifi_cont = wifi.loc[wifi["Continent"] == continent]
+        # wifi_cont = wifi
+        print(wifi_cont.to_markdown())
+        for id in wifi_ids:
+            wifi_filtered = wifi_cont.loc[wifi_cont["Probe ID"] == id]
+            # This is actually A LOT?? What is happening?
+            if len(wifi_filtered) == 0:
+                missing_counter += 1
+                missing_ids.add(id)
+                continue
+            # print(f"{wifi_filtered.to_markdown()}")
+            avg = wifi_filtered.loc[:,"Avg"].mean()
+            if np.isnan(avg):
+                print(f"{wifi_filtered.to_markdown()}")
+                exit(1)
+            avg_wifi.append(avg)
+
+    print(len(list(missing_ids)))
+    print(list(missing_ids))
+    print(avg_wifi)
+
+
+# --------------------------------------------------------------------------
+# PLOTTING THE MAPS
+# --------------------------------------------------------------------------
+
+
 # Adapted from: 
 # https://stackoverflow.com/questions/53233228/plot-latitude-longitude-from-csv-in-python-3-6
-def plotLocationMap(inputs, output):
+def plotProbeLocationMap(inputs, output):
     """
     Expecting the input file(s) with the continent to ID matching.
     Extracting the latitude and longitude and plotting this data on a map.
     """
 
-    locations = extractGeolocation(inputs, "connected.json")
+    locations = extractGeolocation(inputs, "probes/connected.json")
     with open("test.csv", "w") as test_csv:
         test_csv.write("Longitude,Latitude\n")
         for point in locations:
             test_csv.write(f"{point.x},{point.y}\n")
     
     df = pd.read_csv("test.csv", delimiter=",")
+    # Remove the temporary file
+    os.remove("test.csv")
     gdf = GeoDataFrame(df, geometry=locations)
     # gdf = GeoDataFrame(df[:10], geometry=locations[:10])
     # gdf2 = GeoDataFrame(df[10:20], geometry=locations[10:20])
 
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-    gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', color="red", markersize=10, label="Test", legend=True)
+    ax = gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', cmap="plasma", markersize=6, label="Test", legend=True)
     # gdf2.plot(ax=world.plot(figsize=(10,6)), marker='o', color="green", markersize=10, label="Test", legend=True)
 
-    plt.show()
+    # Styling (remove ticks)
+    ax.set_axis_off()
+    # plt.tick_params(left = False, right = False , labelleft = False ,labelbottom = False, bottom = False)
+    # plt.show()
+    # Saving to file
+    plt.title("Probe Spread")
+    plt.savefig(output, bbox_inches='tight', format='pdf')
+    print(f"Wrote output to '{output}'")
+
+def plotDatacenterLocationMap(inputs, output="results/datacentermap.pdf"):
+    """
+    Expecting the datacenters as input. Fetching the geolocation per City Name.
+    Plotting and saving a world map with the given locations of datacenters marked.
+    """
+
+    # NOTE: This whole method can timeout. Simply retry and it SHOULD work!
+
+    locations = convertCityToLocation(inputs[0])
+    df = pd.DataFrame(locations)
+    df = df["geometry"]
+    print(df.to_markdown())
+    
+    gdf = GeoDataFrame(df, geometry=df)
+
+    world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
+    gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', color="#e83b14", markersize=6, label="Test", legend=True)
+
+    # Styling (remove ticks)
+    plt.tick_params(left = False, right = False , labelleft = False ,labelbottom = False, bottom = False)
+    # plt.show()
+    # Saving to file
+    plt.title("Datacenter Locations")
+    plt.savefig(output, bbox_inches='tight', format='pdf')
+    print(f"Wrote output to '{output}'")
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -453,5 +561,7 @@ if __name__ == '__main__':
 
     # plotPingLatencyBoxplot(args)
     # plotPingInterLatencyBoxplot(args)
-    plotPingLatencyLineplot(args)
-    # plotLocationMap(args.input, "map.pdf")
+    # plotPingLatencyLineplot(args)
+    plotLatencyDifferences(args.input)
+    # plotProbeLocationMap(args.input, "results/probemap.pdf")
+    # plotDatacenterLocationMap(args.input)
