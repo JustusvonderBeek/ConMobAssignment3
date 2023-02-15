@@ -310,6 +310,19 @@ def writeDictToFile(dict, out_file):
             row = [continent, len(id_list), id_list]
             writer.writerow(row)
 
+def saveMatchingIdsToCsv(id_list, lan_id_list, technology, output):
+    """
+    Expecting two lists of IDs, the access technology and the matched (closest) LAN ID.
+    Storing the lists to the given CSV output file.
+    """
+
+    print(f"Creating {technology} matching to ({len(id_list)}, {len(lan_id_list)}) and storing to {output}..")
+
+    df = pd.DataFrame(id_list, columns=[f"{technology}"])
+    # df[f"{technology}"] = id_list
+    df["Lan"] = pd.Series(lan_id_list, dtype=int)
+    df.to_csv(output, index=False)
+
 # --------------------------------------------------------------------------
 # MATCHING AND MEASUREMENT POINT CREATION
 # --------------------------------------------------------------------------
@@ -849,6 +862,10 @@ if __name__ == '__main__':
         (wifi_ids, wifi_lan_ids) = getMeasurementNodes("probes/wifi.json", "probes/lan.json")
         (cellular_ids, cell_lan_ids) = getMeasurementNodes("probes/cellular.json", "probes/lan.json")
         (satellite_ids, sat_lan_ids) = getMeasurementNodes("probes/satellite.json", "probes/lan.json")
+
+        saveMatchingIdsToCsv(wifi_ids, wifi_lan_ids, "Wifi", "measurement_creation/wifi_lan_match.csv")
+        saveMatchingIdsToCsv(cellular_ids, cell_lan_ids, "Cellular", "measurement_creation/cellular_lan_match.csv")
+        saveMatchingIdsToCsv(satellite_ids, sat_lan_ids, "Satellite", "measurement_creation/satellite_lan_match.csv")
 
         lan_ids = deduplicateIDs(cell_lan_ids, wifi_lan_ids)
         lan_ids = deduplicateIDs(lan_ids, sat_lan_ids)
