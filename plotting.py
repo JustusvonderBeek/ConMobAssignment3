@@ -234,6 +234,19 @@ def filterNighttimeWeekend(dataframe):
     dataframe = filterTimeOfDay(dataframe, "20:00", "08:00")
     return dataframe
 
+def combineAroundTimepoint(dataframe, start, interval=2):
+    """
+    Expecting the pre-filtered DataFrame. Combining PING measures at any given day in the interval.
+    Returning the combined DataFrame.
+    """
+
+    dataframe["Time"] = pd.to_datetime(dataframe["Timestamp"], unit="s")
+    groupby = dataframe.groupby(pd.Grouper(key="Time", freq="2H", origin="2023-02-09 19:00:00"))
+    dataframe = groupby.mean(numeric_only=False)
+
+    print(f"{dataframe.to_markdown()}")
+
+    return dataframe
 
 # --------------------------------------------------------------------------
 # PLOTTING
@@ -358,15 +371,22 @@ def plotPingLatencyLineplot(args):
     data = pd.read_csv(args.input[0], na_filter=False)
     # Perform some pre-filtering
     valid_pings = filterInvalid(data)
-    valid_pings = valid_pings.loc[valid_pings["Continent"] == "EU"]
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == "NA"]
     valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
     # Comparing Wifi Across the Globe with LAN
     wifi = filterAccessTechnology(valid_pings, "WIFI")
 
     fig, ax = plt.subplots()
-    sns.lineplot(data=wifi[::15], x="Timestamp", y="Avg", hue="Continent")
+    # TODO: Combine measurements around timestamps
+    # From our measurement creation we started roughly around 18:40 at 09.02
+    # That means we gather 19:00 , 21:00 , 23:00, 01:00 , ... etc.
+    # The interval goes 18:00 - 20:00
+    wifi = combineAroundTimepoint(wifi, "19:00")
+
+    sns.lineplot(data=wifi, x="Time", y="Avg")
 
     ax.grid("both")
+    ax.set_ylim(ymin=0, ymax=200)
 
     exportToPdf(fig, "results/ping/lineplot.pdf", width=8, height=6)
 
