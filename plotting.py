@@ -219,7 +219,7 @@ def filterIntraContinent(dataframe, continent):
     """
 
     df = dataframe.loc[dataframe["Continent"] == continent]
-    return df.loc[df["Datacenter Continent"] == continent]
+    return df.loc[df["Continent"] == df["Datacenter Continent"]]
 
 def filterInterContinent(dataframe, source, dest):
     """
@@ -432,25 +432,35 @@ def plotPingLatencyLineplot(args):
 def plotLatencyDifferences(inputs):
     """
     Plotting the differences between TODO
+    Saving to TODO
     """
 
     data = pd.read_csv(inputs[0], na_filter=False)
     # Load the matching
     matching = pd.read_csv("measurement_creation/wifi_lan_match.csv", index_col=None, na_filter=True)
     wifi_ids = [x for x in matching["Wifi"] if not np.isnan(x) ]
-    lan_ids = [x for x in matching["Lan"] if not np.isnan(x) ]
+    lan_ids = [int(x) for x in matching["Lan"] if not np.isnan(x) ]
 
-    print(f"Length: {len(wifi_ids)} vs. {len(lan_ids)}")
-    # print(f"{lan_ids}")
+    print(f"Length:\nWifi:{len(wifi_ids)}\nLan:{len(lan_ids)}")
+    print(f"Wifi: {wifi_ids}\nLan: {lan_ids}")
 
     # Preparing the data by removing invalid and filter for inter-continent, wifi
+    # print(f"Raw data:\n{data.loc[:,'Latency':'Datacenter Continent'].to_markdown()}")
     valid_pings = filterInvalid(data)
-    valid_pings = valid_pings.loc[lambda x: x["Continent"] == x["Datacenter Continent"]]
-    valid_pings = valid_pings.loc[valid_pings["Datacenter Company"] == "MICROSOFT"]
+    # print(f"Invalid filtered data:\n{valid_pings.loc[:,['Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+    valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
+    # print(f"Filtered intra continent:\n{valid_pings.loc[:,['Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+
+    valid_pings = valid_pings.loc[valid_pings["Datacenter Company"] == "GOOGLE"]
+    print(f"Filtered company:\n{valid_pings.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
     wifi = filterAccessTechnology(valid_pings, "WIFI")
+    print(f"Filtered wifi:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+
     wifi = wifi.loc[wifi["Probe ID"].apply(lambda id: id in wifi_ids)]
-    lan = filterAccessTechnology(valid_pings, "LAN")
-    lan = lan.loc[lan["Probe ID"].apply(lambda id: id in lan_ids)]
+    print(f"Filtered on IDs:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+
+    # lan = filterAccessTechnology(valid_pings, "LAN")
+    # lan = lan.loc[lan["Probe ID"].apply(lambda id: id in lan_ids)]
 
     # print(f"Length: {len(wifi.index)} vs. {len(lan.index)}")
 
@@ -459,13 +469,13 @@ def plotLatencyDifferences(inputs):
     missing_counter = 0
     missing_ids = set()
     continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
-    for continent in continents[0]:
-        wifi_cont = filterInterContinent(wifi, continent, continent)
-        # wifi_cont = wifi.loc[wifi["Continent"] == continent]
-        # wifi_cont = wifi
-        print(wifi_cont.to_markdown())
+    for continent in continents[6:7]:
+        print(f"Continent: {continent}")
+        wifi_cont = filterIntraContinent(wifi, continent)
+        print("Filtered INTRA Continent:\n" + wifi_cont.loc[:,['Probe ID','Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown())
         for id in wifi_ids:
             wifi_filtered = wifi_cont.loc[wifi_cont["Probe ID"] == id]
+            print(f"Filtered for {id}:\n{wifi_filtered.loc[:,['Probe ID', 'Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
             # This is actually A LOT?? What is happening?
             if len(wifi_filtered) == 0:
                 missing_counter += 1
@@ -473,14 +483,13 @@ def plotLatencyDifferences(inputs):
                 continue
             # print(f"{wifi_filtered.to_markdown()}")
             avg = wifi_filtered.loc[:,"Avg"].mean()
-            if np.isnan(avg):
-                print(f"{wifi_filtered.to_markdown()}")
-                exit(1)
             avg_wifi.append(avg)
 
     print(len(list(missing_ids)))
     print(list(missing_ids))
     print(avg_wifi)
+
+    # Should be working now: Test and analyze the input (filtered) to the loop.... might be that the data contains many surprises
 
 
 # --------------------------------------------------------------------------
