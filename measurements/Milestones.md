@@ -18,6 +18,27 @@ per intra-continent
 check per continent per datacenter diffs  
 maybe average diffs per technology?  
 
+### a) Are there significant latency differences between probes using different access technologies i.e. wired vs WiFi vs LTE vs Starlink?
+- generate node matchings (and save them to a file or smth)
+    - wifi_ids, wifi_lan_ids
+    - cellular_ids, cellular_lan_ids
+    - satellite_ids, satellite_lan_ids
+- for each wifi_id  
+  for each continent  
+  filter all meassurements to datacenter1 from csv  
+  aggregate all meassurements into one avg  
+- for each wifi_lan_id  
+  for each continent  
+  filter all meassurements to datacenter1 from csv  
+  aggregate all meassurements into one avg  
+- for each pair of wifi node and lan node  
+  take difference = wifi_latency - wifi_lan_latency  
+- plot boxplot of differences (per continent)
+- repeat for datacenter2 and datacenter3 (include in boxplot)
+- repeat for cellular and satellite nodes  
+  one boxplot per technology
+
+
 over time/day  
 => linegraph (time on x-axis / accumulated diffs on y-axis) one line per technology  
 one graph per continent  
