@@ -438,11 +438,13 @@ def plotLatencyDifferences(inputs):
     data = pd.read_csv(inputs[0], na_filter=False)
     # Load the matching
     matching = pd.read_csv("measurement_creation/wifi_lan_match.csv", index_col=None, na_filter=True)
+    recap_matching = matching.copy()
+    out_matching = None
     wifi_ids = [x for x in matching["Wifi"] if not np.isnan(x) ]
     lan_ids = [int(x) for x in matching["Lan"] if not np.isnan(x) ]
 
-    print(f"Length:\nWifi:{len(wifi_ids)}\nLan:{len(lan_ids)}")
-    print(f"Wifi: {wifi_ids}\nLan: {lan_ids}")
+    # print(f"Length:\nWifi:{len(wifi_ids)}\nLan:{len(lan_ids)}")
+    # print(f"Wifi: {wifi_ids}\nLan: {lan_ids}")
 
     # Preparing the data by removing invalid and filter for inter-continent, wifi
     # print(f"Raw data:\n{data.loc[:,'Latency':'Datacenter Continent'].to_markdown()}")
@@ -451,45 +453,121 @@ def plotLatencyDifferences(inputs):
     valid_pings = valid_pings.loc[valid_pings["Continent"] == valid_pings["Datacenter Continent"]]
     # print(f"Filtered intra continent:\n{valid_pings.loc[:,['Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
-    valid_pings = valid_pings.loc[valid_pings["Datacenter Company"] == "GOOGLE"]
-    print(f"Filtered company:\n{valid_pings.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
-    wifi = filterAccessTechnology(valid_pings, "WIFI")
-    print(f"Filtered wifi:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+    datacenters = ["GOOGLE", "AMAZON", "MICROSOFT"]
+    # datacenter = datacenters[2]
 
-    wifi = wifi.loc[wifi["Probe ID"].apply(lambda id: id in wifi_ids)]
-    print(f"Filtered on IDs:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+    for datacenter in datacenters:
+        matching = recap_matching
+        local_v_pings = valid_pings.loc[valid_pings["Datacenter Company"] == datacenter]
+        # print(f"Filtered company:\n{valid_pings.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+        wifi = filterAccessTechnology(local_v_pings, "WIFI")
+        # print(f"Filtered wifi:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
-    # lan = filterAccessTechnology(valid_pings, "LAN")
-    # lan = lan.loc[lan["Probe ID"].apply(lambda id: id in lan_ids)]
+        wifi = wifi.loc[wifi["Probe ID"].apply(lambda id: id in wifi_ids)]
+        # print(f"Filtered on IDs:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
-    # print(f"Length: {len(wifi.index)} vs. {len(lan.index)}")
+        lan = filterAccessTechnology(valid_pings, "LAN")
+        lan = lan.loc[lan["Probe ID"].apply(lambda id: id in lan_ids)]
+        # print(f"Filtered on IDs:\n{lan.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
-    # For each continent
-    avg_wifi = list()
-    missing_counter = 0
-    missing_ids = set()
-    continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
-    for continent in continents[6:7]:
-        print(f"Continent: {continent}")
-        wifi_cont = filterIntraContinent(wifi, continent)
-        print("Filtered INTRA Continent:\n" + wifi_cont.loc[:,['Probe ID','Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown())
-        for id in wifi_ids:
-            wifi_filtered = wifi_cont.loc[wifi_cont["Probe ID"] == id]
-            print(f"Filtered for {id}:\n{wifi_filtered.loc[:,['Probe ID', 'Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
-            # This is actually A LOT?? What is happening?
-            if len(wifi_filtered) == 0:
-                missing_counter += 1
-                missing_ids.add(id)
+        # print(f"Length: {len(wifi.index)} vs. {len(lan.index)}")
+
+        # For each continent
+        avg_wifi = list()
+        missing_counter = 0
+        missing_ids = set()
+        contained_ids = set()
+        continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
+        for continent in continents:
+            print(f"Continent: {continent}")
+            wifi_cont = filterIntraContinent(wifi, continent)
+            # print("Filtered INTRA Continent:\n" + wifi_cont.loc[:,['Probe ID','Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown())
+            for id in wifi_ids:
+                wifi_filtered = wifi_cont.loc[wifi_cont["Probe ID"] == id]
+                # print(f"Filtered for {id}:\n{wifi_filtered.loc[:,['Probe ID', 'Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+                # This is actually A LOT! Can happen because we are filtering for continents right now and so many of the probe IDs wont match
+                if len(wifi_filtered) == 0:
+                    missing_counter += 1
+                    missing_ids.add(id)
+                    continue
+                # print(f"{wifi_filtered.to_markdown()}")
+                avg = wifi_filtered.loc[:,"Avg"].mean()
+                avg_wifi.append((id, avg, continent, datacenter))
+                contained_ids.add(id)
+
+        # print(f"Missing Probes: {len(list(missing_ids))}")
+        # print(f"List of missing IDs: {list(missing_ids)}")
+        # print(f"Avg latencies: {avg_wifi}")
+
+        # Should be working now: Test and analyze the input (filtered) to the loop.... might be that the data contains many surprises
+
+        # Filtering the Lan IDs that match to the contained wifi IDs
+        lan_ids = list()
+        for id in contained_ids:
+            lan_id = matching.loc[matching["Wifi"] == id]
+            # print(lan_id["Lan"].values[0])
+            if np.isnan(lan_id["Lan"].values[0]):
                 continue
-            # print(f"{wifi_filtered.to_markdown()}")
-            avg = wifi_filtered.loc[:,"Avg"].mean()
-            avg_wifi.append(avg)
+            lan_ids.append(int(lan_id["Lan"].values[0]))
 
-    print(len(list(missing_ids)))
-    print(list(missing_ids))
-    print(avg_wifi)
+        # print(lan_ids)
+        avg_lan = list()
+        for continent in continents:
+            lan_cont = filterIntraContinent(lan, continent)
 
-    # Should be working now: Test and analyze the input (filtered) to the loop.... might be that the data contains many surprises
+            for id in lan_ids:
+                lan_filtered = lan_cont.loc[lan_cont["Probe ID"] == id]
+
+                if len(lan_filtered) == 0:
+                    # print("Missing LAN probe in measurement")
+                    continue
+                    
+                avg = lan_filtered.loc[:,"Avg"].mean()
+                avg_lan.append((id, avg, continent, datacenter))
+
+        # print(f"Avg lan latencies: {avg_lan}")
+        # Matching into the dataframe
+        if len(avg_lan) < len(avg_wifi):
+            for i in range(len(avg_lan)):
+                matching.loc[matching["Lan"] == avg_lan[i][0], "Lan Avg"] = avg_lan[i][1]
+                matching.loc[matching["Lan"] == avg_lan[i][0], "Continent"] = avg_lan[i][2]
+                matching.loc[matching["Lan"] == avg_lan[i][0], "Datacenter"] = avg_lan[i][3]
+                matching_wifi = matching.loc[matching["Lan"] == avg_lan[i][0], "Wifi"].values[0]
+                wifi_elem = next((x for x in avg_wifi if x[0] == matching_wifi), None)
+                if len(wifi_elem) is None:
+                    print("Did not find match!!!!!")
+                    exit(1)
+                matching.loc[matching["Lan"] == avg_lan[i][0], "Wifi Avg"] = wifi_elem[1]
+
+        # print(matching.to_markdown())
+
+        print("Computing the difference")
+
+        matching["Diff"] = matching["Wifi Avg"] - matching["Lan Avg"]
+        matching = matching[matching["Diff"].notnull()]
+
+        # print(matching.to_markdown())
+
+        if out_matching is None:
+            out_matching = matching
+        else:
+            out_matching = pd.concat([out_matching, matching], ignore_index=True)
+            out_matching.to_csv("measurements/ping/matched_pings_wifi.csv")
+        
+        
+        # matching.to_csv("measurements/ping/matched_pings_wifi.csv")
+
+    # print(f"Matching? {matching.loc[matching['Lan'] == avg_lan[0][0]]}")
+
+    fig, axes = plt.subplots()
+    sns.boxplot(data=out_matching, x="Continent", y="Diff", hue="Datacenter")
+
+    axes.set_xlabel("Continents")
+    axes.set_ylabel("Wifi RTT - Lan RTT [ms]")
+    plt.title("RTT Difference between LAN and WiFi")
+
+    # plt.show()
+    exportToPdf(fig, f"results/ping/wifi_lan_diff.pdf", width=8, height=6)
 
 
 # --------------------------------------------------------------------------
