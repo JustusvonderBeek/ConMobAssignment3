@@ -56,18 +56,35 @@ check offline nodes?
 ### 2 b) Compare the state of different last-mile access technology in different continents.  Is there an obviously better-performing wireless technology in every continent? Which and by how much?
 - Analyse diff-plots
 
+### 2 c) Which wireless is most stable? Is it dependent on the network provider?
+- Answer with previous plots
 
 ## 3. What is the impact of the distance between the probe and cloud datacenter to end-to-end latency?
 
 ### 3 a) Which organizations host the routers on-path between probes and cloud datacenters?
 - get intra-continental asn numbers in traces from nodes to datacenters
+(reason: in reality nodes connect to the local datacenter not inter-continental)
   - use all nodes in a continent
   - aggregate all asns (+ count how often)
   - per datacenter (only intra-continent)
 - plot as pie chart (one per continent)
 
+  
+- node_id,node_continent,datacenter_ip,datacenter_company,datacenter_continent,[IPs],[ASNs],[ASN_company]
+- resolve ips to asns
+  - if multiple ips per hop => check asns
+  - if asns equal => just add once to ASN list
+  - if asns not euqal => add both
+
 ### Do you observe different Internet routes for different cloud providers? If yes, why?
-- check differences between datacenters  
+- check traces from each node to every datacenter
+- aggregate ASNs
+- diff ASNs
+- E.g. node0->Google sees 2xO2 + 5xGoogle  
+  node0->Amazon sees 2xO2 + 2xGoogle + 3xAmazon  
+  => diff: 3xGoogle vs 3xAmazon
+- aggregate all diffs per continent
+- ? plot as piechart ?
 
 ### 3 b) What are the latency variations for probes connecting to datacenters in neighboring continents via under-sea cables
 - Pick some neighbors (e.g. EU<->US, EU<->ME, ...)
