@@ -332,18 +332,19 @@ def plotLineplot(data, technology):
     # That means we gather 19:00 , 21:00 , 23:00, 01:00 , ... etc.
     # The interval goes 18:00 - 20:00
 
+    pal = {"EU":"tab:blue", "OC":"tab:orange", "NA": "tab:green", "SA": "tab:red", "AF": "tab:purple", "AS": "tab:brown", "ME": "tab:pink"}
     for cont in continents:
         filtered = tech.loc[tech["Continent"] == cont].copy()
         if len(filtered) == 0:
             continue
-        wifi = combineAroundTimepoint(filtered)
-        sns.lineplot(data=wifi, x="Time", y="Avg", markers=True, label=f"{cont}")
+        wifi = combineAroundTimepoint(filtered, interval="4h")
+        sns.lineplot(data=wifi, x="Time", y="Avg", markers=True, label=f"{cont}", color=pal[cont])
 
     # Styling the graph
     ax.yaxis.get_ticklocs(minor=True)
     ax.minorticks_on()
     ax.set_xticklabels(ax.get_xticklabels(), rotation="45", horizontalalignment='right')
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%d.%m.%Y - %H:%M'))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a - %d.%m.%Y - %H:%M'))
     ax.grid(visible=True, which="major")
     ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":")
     ax.set_ylim(ymin=0)
@@ -435,12 +436,15 @@ def plotLatencyDifferences(inputs):
     Saving to TODO
     """
 
+    technology = "Satellite"
+    technology_upper = technology.upper()
+    technology_lower = technology.lower()
     data = pd.read_csv(inputs[0], na_filter=False)
     # Load the matching
-    matching = pd.read_csv("measurement_creation/wifi_lan_match.csv", index_col=None, na_filter=True)
+    matching = pd.read_csv(f"measurement_creation/{technology_lower}_lan_match.csv", index_col=None, na_filter=True)
     recap_matching = matching.copy()
     out_matching = None
-    wifi_ids = [x for x in matching["Wifi"] if not np.isnan(x) ]
+    wifi_ids = [x for x in matching[f"{technology}"] if not np.isnan(x) ]
     lan_ids = [int(x) for x in matching["Lan"] if not np.isnan(x) ]
 
     # print(f"Length:\nWifi:{len(wifi_ids)}\nLan:{len(lan_ids)}")
@@ -460,7 +464,7 @@ def plotLatencyDifferences(inputs):
         matching = recap_matching
         local_v_pings = valid_pings.loc[valid_pings["Datacenter Company"] == datacenter]
         # print(f"Filtered company:\n{valid_pings.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
-        wifi = filterAccessTechnology(local_v_pings, "WIFI")
+        wifi = filterAccessTechnology(local_v_pings, f"{technology_upper}")
         # print(f"Filtered wifi:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
         wifi = wifi.loc[wifi["Probe ID"].apply(lambda id: id in wifi_ids)]
@@ -504,7 +508,7 @@ def plotLatencyDifferences(inputs):
         # Filtering the Lan IDs that match to the contained wifi IDs
         lan_ids = list()
         for id in contained_ids:
-            lan_id = matching.loc[matching["Wifi"] == id]
+            lan_id = matching.loc[matching[f"{technology}"] == id]
             # print(lan_id["Lan"].values[0])
             if np.isnan(lan_id["Lan"].values[0]):
                 continue
@@ -532,18 +536,18 @@ def plotLatencyDifferences(inputs):
                 matching.loc[matching["Lan"] == avg_lan[i][0], "Lan Avg"] = avg_lan[i][1]
                 matching.loc[matching["Lan"] == avg_lan[i][0], "Continent"] = avg_lan[i][2]
                 matching.loc[matching["Lan"] == avg_lan[i][0], "Datacenter"] = avg_lan[i][3]
-                matching_wifi = matching.loc[matching["Lan"] == avg_lan[i][0], "Wifi"].values[0]
+                matching_wifi = matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology}"].values[0]
                 wifi_elem = next((x for x in avg_wifi if x[0] == matching_wifi), None)
                 if len(wifi_elem) is None:
                     print("Did not find match!!!!!")
                     exit(1)
-                matching.loc[matching["Lan"] == avg_lan[i][0], "Wifi Avg"] = wifi_elem[1]
+                matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology} Avg"] = wifi_elem[1]
 
         # print(matching.to_markdown())
 
         print("Computing the difference")
 
-        matching["Diff"] = matching["Wifi Avg"] - matching["Lan Avg"]
+        matching["Diff"] = matching[f"{technology} Avg"] - matching["Lan Avg"]
         matching = matching[matching["Diff"].notnull()]
 
         # print(matching.to_markdown())
@@ -552,7 +556,7 @@ def plotLatencyDifferences(inputs):
             out_matching = matching
         else:
             out_matching = pd.concat([out_matching, matching], ignore_index=True)
-            out_matching.to_csv("measurements/ping/matched_pings_wifi.csv")
+            out_matching.to_csv(f"measurements/ping/matched_pings_{technology_lower}.csv")
         
         
         # matching.to_csv("measurements/ping/matched_pings_wifi.csv")
@@ -563,11 +567,33 @@ def plotLatencyDifferences(inputs):
     sns.boxplot(data=out_matching, x="Continent", y="Diff", hue="Datacenter")
 
     axes.set_xlabel("Continents")
-    axes.set_ylabel("Wifi RTT - Lan RTT [ms]")
-    plt.title("RTT Difference between LAN and WiFi")
+    axes.set_ylabel(f"{technology} RTT - Lan RTT [ms]")
+    plt.title(f"RTT Difference between LAN and {technology}")
+    axes.yaxis.get_ticklocs(minor=True)
+    axes.minorticks_on()
+    axes.set_axisbelow(True)
+    axes.grid(visible=True, which="major", axis="y")
+    axes.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="y")
+    plt.tick_params(axis='x', which='minor', bottom=False, top=False, labelbottom=False)
 
     # plt.show()
-    exportToPdf(fig, f"results/ping/wifi_lan_diff.pdf", width=8, height=6)
+    exportToPdf(fig, f"results/ping/{technology_lower}_lan_diff.pdf", width=8, height=6)
+
+    fig, axes = plt.subplots()
+
+    # Sanity check plot
+    sns.countplot(data=out_matching, x="Continent", hue="Datacenter")
+
+    axes.set_xlabel("Continents")
+    axes.set_ylabel("# Measures")
+    plt.title(f"# Measures per Continent and Datacenter ({technology_upper})")
+    axes.yaxis.get_ticklocs(minor=True)
+    axes.minorticks_on()
+    axes.set_axisbelow(True)
+    axes.grid(visible=True, which="major", axis="y")
+    axes.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="y")
+
+    exportToPdf(fig, f"results/ping/{technology_lower}_lan_count.pdf", width=8, height=6)
 
 
 # --------------------------------------------------------------------------
@@ -648,7 +674,7 @@ if __name__ == '__main__':
 
     # plotPingLatencyBoxplot(args)
     # plotPingInterLatencyBoxplot(args)
-    # plotPingLatencyLineplot(args)
-    plotLatencyDifferences(args.input)
+    plotPingLatencyLineplot(args)
+    # plotLatencyDifferences(args.input)
     # plotProbeLocationMap(args.input, "results/probemap.pdf")
     # plotDatacenterLocationMap(args.input)
