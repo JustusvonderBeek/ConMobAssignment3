@@ -319,7 +319,7 @@ def plotQuadAccessTechnology(raw_data, technology, prefix=""):
 
     exportToPdf(fig, f"results/ping/{prefix}{technology}.pdf", width=16, height=12)
 
-def plotLineplot(data, technology):
+def plotLineplot(data, technology, ymax=200):
     continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
     # Perform some pre-filtering
     valid_pings = filterInvalid(data)
@@ -347,7 +347,7 @@ def plotLineplot(data, technology):
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%a - %d.%m.%Y - %H:%M'))
     ax.grid(visible=True, which="major")
     ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":")
-    ax.set_ylim(ymin=0)
+    ax.set_ylim(ymin=0, ymax=ymax)
     ax.set_ylabel("RTT [ms]")
     ax.set_xlabel("Timestamp")
     plt.title(f"{technology} Technology")
@@ -423,7 +423,7 @@ def plotPingLatencyLineplot(args):
     
     plotLineplot(data, "WIFI")
 
-    plotLineplot(data, "CELLULAR")
+    plotLineplot(data, "CELLULAR", ymax=350)
 
     plotLineplot(data, "SATELLITE")
 
@@ -446,6 +446,7 @@ def plotLatencyDifferences(inputs):
     out_matching = None
     wifi_ids = [x for x in matching[f"{technology}"] if not np.isnan(x) ]
     lan_ids = [int(x) for x in matching["Lan"] if not np.isnan(x) ]
+    wifi_ids = wifi_ids[:len(lan_ids)]
 
     # print(f"Length:\nWifi:{len(wifi_ids)}\nLan:{len(lan_ids)}")
     # print(f"Wifi: {wifi_ids}\nLan: {lan_ids}")
@@ -464,6 +465,9 @@ def plotLatencyDifferences(inputs):
         matching = recap_matching
         local_v_pings = valid_pings.loc[valid_pings["Datacenter Company"] == datacenter]
         # print(f"Filtered company:\n{valid_pings.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
+        if len(local_v_pings) == 0:
+            continue
+
         wifi = filterAccessTechnology(local_v_pings, f"{technology_upper}")
         # print(f"Filtered wifi:\n{wifi.loc[:,['Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
 
@@ -478,8 +482,6 @@ def plotLatencyDifferences(inputs):
 
         # For each continent
         avg_wifi = list()
-        missing_counter = 0
-        missing_ids = set()
         contained_ids = set()
         continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
         for continent in continents:
@@ -491,8 +493,7 @@ def plotLatencyDifferences(inputs):
                 # print(f"Filtered for {id}:\n{wifi_filtered.loc[:,['Probe ID', 'Technology', 'Latency', 'Avg', 'Continent', 'Datacenter Company', 'Datacenter Continent']].to_markdown()}")
                 # This is actually A LOT! Can happen because we are filtering for continents right now and so many of the probe IDs wont match
                 if len(wifi_filtered) == 0:
-                    missing_counter += 1
-                    missing_ids.add(id)
+                    # print("Missing wifi filtered")
                     continue
                 # print(f"{wifi_filtered.to_markdown()}")
                 avg = wifi_filtered.loc[:,"Avg"].mean()
@@ -531,17 +532,19 @@ def plotLatencyDifferences(inputs):
 
         # print(f"Avg lan latencies: {avg_lan}")
         # Matching into the dataframe
-        if len(avg_lan) < len(avg_wifi):
-            for i in range(len(avg_lan)):
-                matching.loc[matching["Lan"] == avg_lan[i][0], "Lan Avg"] = avg_lan[i][1]
-                matching.loc[matching["Lan"] == avg_lan[i][0], "Continent"] = avg_lan[i][2]
-                matching.loc[matching["Lan"] == avg_lan[i][0], "Datacenter"] = avg_lan[i][3]
-                matching_wifi = matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology}"].values[0]
-                wifi_elem = next((x for x in avg_wifi if x[0] == matching_wifi), None)
-                if len(wifi_elem) is None:
-                    print("Did not find match!!!!!")
-                    exit(1)
-                matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology} Avg"] = wifi_elem[1]
+        # if len(avg_lan) < len(avg_wifi):
+        for i in range(len(avg_lan)):
+            matching.loc[matching["Lan"] == avg_lan[i][0], "Lan Avg"] = avg_lan[i][1]
+            matching.loc[matching["Lan"] == avg_lan[i][0], "Continent"] = avg_lan[i][2]
+            matching.loc[matching["Lan"] == avg_lan[i][0], "Datacenter"] = avg_lan[i][3]
+            matching_wifi_id = matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology}"].values[0]
+            wifi_elem = next((x for x in avg_wifi if x[0] == matching_wifi_id), None)
+            if wifi_elem is None or len(wifi_elem) is None:
+                # print("Did not find match!!!!!")
+                matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology} Avg"] = np.nan
+                # exit(1)
+                continue
+            matching.loc[matching["Lan"] == avg_lan[i][0], f"{technology} Avg"] = wifi_elem[1]
 
         # print(matching.to_markdown())
 
@@ -560,6 +563,9 @@ def plotLatencyDifferences(inputs):
         
         
         # matching.to_csv("measurements/ping/matched_pings_wifi.csv")
+
+    v = out_matching.Continent.value_counts()
+    out_matching = out_matching[out_matching.Continent.isin(v.index[v.gt(8)])]
 
     # print(f"Matching? {matching.loc[matching['Lan'] == avg_lan[0][0]]}")
 
