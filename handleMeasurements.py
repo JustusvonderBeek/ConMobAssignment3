@@ -276,6 +276,7 @@ def rawPingMeasureToCsv(id_list, csv):
     # Printing a progress bar
     # In order for output to work correctly, use tqdm.write(<string>) - this should make the output readable
     # and keep the progress bar at the bottom of the terminal
+    # id_list = id_list[15:16]
     with tqdm(total=len(id_list), desc="Fetching PINGs") as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
             future_to_df = {executor.submit(pingMeasureToDataFrame, id, file_dict): id for id in id_list}
@@ -299,17 +300,45 @@ def rawPingMeasureToCsv(id_list, csv):
 # TRACEROUTE MEASUREMENT
 # --------------------------------------------------------------------------
 
-def extractTraceMeasureInformation(trace, prbs, file_dict):
+def extractTraceMeasureInformation(traceroute, file_dict):
     """
     Expecting the trace measurement JSON and the involved probes.
     Returning a valid DataFrame containg the measurement information.
     """
 
-    domain = "google.de"
-    ip = socket.gethostbyname(domain)
+    involved_probes = filterJsonList(traceroute, "prb_id")
+    columns = ["Probe ID", "Prb Continent", "Datacenter IP", "Datacenter Company", "Datacenter Continent", "IP", "ASN", "ASN Company"]
+
+    print(f"Length of JSON: {len(traceroute)}")
+
     c = Client()
-    r = c.lookup(ip)
-    print(f"Owner: {r.owner}")
+    for trace in traceroute:
+        # For each IP address that we find in the measurement
+        ips = list()
+        asn = list()
+        asn_comp = list()
+        for hop in trace["result"]:
+            # Check if we got a response from the hop
+            if "x" in hop["result"][0].keys():
+                print(f"Hop {hop['hop']} did not contain information")
+                continue
+            # Resolve IP to ASN number and ASN Owner
+            ip = hop["result"][0]["from"]
+            resp = c.lookup(ip)
+            ips.append(ip)
+            asn.append(resp.asn)
+            asn_comp.append(resp.owner)
+
+        print(f"IPs: {ip}")
+        print(f"ASNs: {asn}")
+        print(f"ASN-Companies: {asn_comp}")
+
+        exit(1)
+    # domain = "google.de"
+    # ip = socket.gethostbyname(domain)
+    # r = c.lookup(ip)
+    # print(f"Owner: '{r.owner}' - {r.asn}")
+
 
     return None
 
@@ -324,12 +353,15 @@ def traceMeasureToDataFrame(id, file_dict):
     tqdm.write(f"Fetching TRACEROUTE measurements for {id}...")
     # This can take quite some time (timeout, if none is given the request will not timeout)
     # See: https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
-    trace = requests.get(id_url, timeout=default_timeout)
-    trace = trace.json()
-    printJSON(trace)
-    involved_probes = filterJsonList(trace, "prb_id")
-    print(involved_probes)
-    data = extractTraceMeasureInformation(trace, involved_probes, file_dict)
+    traceroute = requests.get(id_url, timeout=default_timeout)
+    traceroute = traceroute.json()
+    with open("measurements/traceroute/tmp.json", "w") as output:
+        json.dump(traceroute, output, indent=2)
+        print("Wrote intermediate JSON to 'measurements/traceroute/tmp.json'")
+    # printJSON(trace)
+    # involved_probes = filterJsonList(trace, "prb_id")
+    # print(involved_probes)
+    data = extractTraceMeasureInformation(traceroute, file_dict)
 
     return data
 
@@ -341,7 +373,8 @@ def rawTraceMeasurementsToCsv(id_list, csv):
     """
 
     df = None
-    for id in id_list[:1]:
+    id_list = id_list[0:1]
+    for id in id_list:
         traceMeasureToDataFrame(id, None)
 
     df.to_csv(csv, index=False)
@@ -358,7 +391,7 @@ if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
     parser.add_argument('-i', '--input', type=str, default="20230208.json")
-    parser.add_argument('-o', '--output', type=str, default="connected.json")
+    parser.add_argument('-o', '--output', type=str, default="measurements/ping/ping.csv")
     parser.add_argument('-l', '--list', action="store_true", help="Printing all available user measurements.")
     parser.add_argument('-w', '--overwrite', action="store_true", help="If existing results should be overwritten!")
     # parser.add_argument('-m', '--matching', action="store_true", help="Matching measurement points from existing *.json files. Overwriting existing files!")
@@ -369,7 +402,7 @@ if __name__ == '__main__':
     if args.list:
         ping_ids, trace_ids = listMeasurements()
         # Extract the PING CSV Table; already stores the result in the given file
-        ping_data = rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
+        # ping_data = rawPingMeasureToCsv(ping_ids, args.output)
 
         # TODO: Fetch traceroute measurements
-        # trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
+        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
