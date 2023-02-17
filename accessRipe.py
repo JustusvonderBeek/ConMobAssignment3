@@ -310,7 +310,7 @@ def writeDictToFile(dict, out_file):
             row = [continent, len(id_list), id_list]
             writer.writerow(row)
 
-def saveMatchingIdsToCsv(id_list, lan_id_list, technology, output):
+def saveMatchingIdsToCsv(id_list, lan_id_list, dist_list, technology, output):
     """
     Expecting two lists of IDs, the access technology and the matched (closest) LAN ID.
     Storing the lists to the given CSV output file.
@@ -321,6 +321,8 @@ def saveMatchingIdsToCsv(id_list, lan_id_list, technology, output):
     df = pd.DataFrame(id_list, columns=[f"{technology}"])
     # df[f"{technology}"] = id_list
     df["Lan"] = pd.Series(lan_id_list, dtype=int)
+    df["Dist"] = pd.Series(dist_list, dtype=float)
+    
     df.to_csv(output, index=False)
 
 # --------------------------------------------------------------------------
@@ -595,14 +597,22 @@ def inRange(loc1,loc2):
     return getDistance(loc1, loc2) < distance_threshold
 
 
-def getMeasurementNodes(in_file0, in_file1):
+def getMeasurementNodes(in_file0, in_file1, technology, output):
+    """
+    Finding matches between technology and LAN probes.
+    Saves MATCHES to CSV.
+    Returning de-duplicated LISTS of IDs (without matches)
+    """
+    
     meassurement_points = findDoubleMatches(in_file0, in_file1)
 
     # print all points
-    # counter = 0
-    # for elem in meassurement_points:
-    #     print(f"[{counter}] {elem}")
-    #     counter+=1
+    counter = 0
+    for elem in meassurement_points:
+        print(f"[{counter}] {elem}")
+        counter+=1
+
+    saveMatchingIdsToCsv([x["id0"] for x in meassurement_points], [x["id1"] for x in meassurement_points], [x["dist"] for x in meassurement_points], technology=technology, output=output)
 
     id_list0 = list()
     id_list1 = list()
@@ -859,13 +869,13 @@ if __name__ == '__main__':
 
     if args.matching:
         # List of IDs that can be used for measurements
-        (wifi_ids, wifi_lan_ids) = getMeasurementNodes("probes/wifi.json", "probes/lan.json")
-        (cellular_ids, cell_lan_ids) = getMeasurementNodes("probes/cellular.json", "probes/lan.json")
-        (satellite_ids, sat_lan_ids) = getMeasurementNodes("probes/satellite.json", "probes/lan.json")
+        (wifi_ids, wifi_lan_ids) = getMeasurementNodes("probes/wifi.json", "probes/lan.json", "Wifi", "measurement_creation/wifi_lan_match.csv")
+        (cellular_ids, cell_lan_ids) = getMeasurementNodes("probes/cellular.json", "probes/lan.json", "Cellular", "measurement_creation/cellular_lan_match.csv")
+        (satellite_ids, sat_lan_ids) = getMeasurementNodes("probes/satellite.json", "probes/lan.json", "Satellite", "measurement_creation/satellite_lan_match.csv")
 
-        saveMatchingIdsToCsv(wifi_ids, wifi_lan_ids, "Wifi", "measurement_creation/wifi_lan_match.csv")
-        saveMatchingIdsToCsv(cellular_ids, cell_lan_ids, "Cellular", "measurement_creation/cellular_lan_match.csv")
-        saveMatchingIdsToCsv(satellite_ids, sat_lan_ids, "Satellite", "measurement_creation/satellite_lan_match.csv")
+        # saveMatchingIdsToCsv(wifi_ids, wifi_lan_ids, "Wifi", "measurement_creation/wifi_lan_match.csv")
+        # saveMatchingIdsToCsv(cellular_ids, cell_lan_ids, "Cellular", "measurement_creation/cellular_lan_match.csv")
+        # saveMatchingIdsToCsv(satellite_ids, sat_lan_ids, "Satellite", "measurement_creation/satellite_lan_match.csv")
 
         lan_ids = deduplicateIDs(cell_lan_ids, wifi_lan_ids)
         lan_ids = deduplicateIDs(lan_ids, sat_lan_ids)
