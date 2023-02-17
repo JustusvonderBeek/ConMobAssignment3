@@ -26,10 +26,12 @@ check offline nodes?
   aggregate all meassurements into one avg  
 - for each pair of wifi node and lan node  
   take difference = wifi_latency - wifi_lan_latency  
-- plot boxplot of differences (per continent)
-- repeat for datacenter2 and datacenter3 (include in boxplot)
+- plot lineplot of absolute RTTs  
+  per continent    
+  only if 3 or more actuall results
+- repeat for datacenter2 and datacenter3 (include in same lineplot)
 - repeat for cellular and satellite nodes  
-  one boxplot per technology
+  one lineplot per technology
 
 { ping measurement use average of 3 packets }  
 { packetloss is still a valid measurement }  
@@ -43,8 +45,16 @@ check offline nodes?
   - plot as linegraph (one line per continent)  
     one plot per technology
 
+### 2a) Results
+- shift by a few hours based UTC results
+- day night pattern (expecially satellite)
+- europe is very stable
+- weekend to weekday pattern
+- overall bad representation, because of few nodes (ME, AF, AS?)
+- => difference between
+
 ### 2 b) Compare the state of different last-mile access technology in different continents.  Is there an obviously better-performing wireless technology in every continent? Which and by how much?
-- Analyse plots from 2a)
+- Analyse diff-plots
 
 
 ## 3. What is the impact of the distance between the probe and cloud datacenter to end-to-end latency?
