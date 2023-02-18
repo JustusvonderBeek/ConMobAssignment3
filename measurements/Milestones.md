@@ -45,7 +45,7 @@ check offline nodes?
   - plot as linegraph (one line per continent)  
     one plot per technology
 
-### 2a) Results
+### 2 a) Results
 - shift by a few hours based UTC results
 - day night pattern (expecially satellite)
 - europe is very stable
@@ -67,14 +67,19 @@ check offline nodes?
   - use all nodes in a continent
   - aggregate all asns (+ count how often)
   - per datacenter (only intra-continent)
-- plot as pie chart (one per continent)
-
+- plot as bar chart (one per continent per datacenter)
+  - EU->EU Amazon
+  - EU->EU MicroSoft
+  - EU->EU Google
+  - US->US Amazon
+  - US->US MicroSoft
+  - US->US Google
   
 - node_id,node_continent,technology,datacenter_ip,datacenter_company,datacenter_continent,[IPs],[ASNs],[ASN_company]
 - resolve ips to asns
   - if multiple ips per hop => check asns
   - if asns equal => just add once to ASN list
-  - if asns not euqal => add both
+  - if asns not equal => add both
 
 ### Do you observe different Internet routes for different cloud providers? If yes, why?
 - check traces from each node to every datacenter
@@ -85,6 +90,19 @@ check offline nodes?
   => diff: 3xGoogle vs 3xAmazon
 - aggregate all diffs per continent
 - ? plot as piechart ?
+
+
+### 3 a) Results
+- explain exact procedure / what is shown
+- explain paris traceroute handling (count multiple ASN per hop BUT only once if same ASN)
+- only EU and NA because of number of nodes
+- argue with barplots
+- Depending on node origin it has to first traverse local ISP ASNs
+- then we see bigger ASN networks (such as)
+- and the majority of the paths are inside the target datacenters provider
+- overall fewer hops in NA than EU (prob becuse of higher population density/countries)
+
+
 
 ### 3 b) What are the latency variations for probes connecting to datacenters in neighboring continents via under-sea cables
 - Pick some neighbors (e.g. EU<->US, EU<->ME, ...)
@@ -98,13 +116,15 @@ check offline nodes?
 - use wifi, satellite nodes
 - plot one cdf of both (or maybe two lines in the same plot if easier) 
 
-### 3 c) If you imagine the wireless RIPE Atlas probes to be mobile clients running a next-generation application requiring 30 ms end-to-end operational latency, is there a potential benefit in offloading to an organization on path instead of offloading to the cloud datacenter deployed argue with necessary end-to-end latency argue with wifi/cellular/satellite added latency use X-hop trace latency to imaging edge system  
+### 3 c) If you imagine the wireless RIPE Atlas probes to be mobile clients running a next-generation application requiring 30 ms end-to-end operational latency, is there a potential benefit in offloading to an organization on path instead of offloading to the cloud datacenter deployed
 
-#### i) same country
+argue with necessary end-to-end latency argue with wifi/cellular/satellite added latency use X-hop trace latency to imaging edge system  
+
+#### i) in the same country as the probe
 - plot cdf with nodes only in country (germany)
 - argue with intra-country cdf
-#### ii) same continent different country
+#### ii) in the neighboring country in the same continent
 - argue with cross-country cdf (france->germany?)
-#### iii) different continent
+#### iii) in the neighboring continent
 - argue with inter-continent cdf (reuse US<->EU cdf from 3b) )
 
