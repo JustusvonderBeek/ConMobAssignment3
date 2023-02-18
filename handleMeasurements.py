@@ -308,7 +308,7 @@ def rawPingMeasureToCsv(id_list, csv):
 # TRACEROUTE MEASUREMENT
 # --------------------------------------------------------------------------
 
-def extractTraceMeasureInformation(traceroute, file_dict):
+def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict):
     """
     Expecting the trace measurement JSON and the involved probes.
     Returning a valid DataFrame containg the measurement information.
@@ -381,25 +381,25 @@ def extractTraceMeasureInformation(traceroute, file_dict):
 
         return pd.DataFrame(information)
 
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
-        future_to_df = {executor.submit(inner_loop, trace): trace for trace in traceroute}
-        
-        for future in concurrent.futures.as_completed(future_to_df):
-            id = future_to_df[future]
-            try:
-                dataframe = future.result()
-            except Exception as exc:
-                print(f"ID {id} generated exception: {exc}")
-            else:
-                df = pd.concat([dataframe, df], ignore_index=True)
-                # pbar.update(1)
+    with tqdm(total=len(traceroute), position=index, leave=False, desc=f"TRACE {measurement_id}") as pbar:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            future_to_df = {executor.submit(inner_loop, trace): trace for trace in traceroute}
+            
+            for future in concurrent.futures.as_completed(future_to_df):
+                id = future_to_df[future]
+                try:
+                    dataframe = future.result()
+                except Exception as exc:
+                    print(f"ID {id} generated exception: {exc}")
+                else:
+                    df = pd.concat([dataframe, df], ignore_index=True)
+                    pbar.update(1)
 
     # print(f"{data.to_markdown()}")
 
     return df
 
-def traceMeasureToDataFrame(measurement_id, file_dict):
+def traceMeasureToDataFrame(measurement_id, index, file_dict):
     """
     Expecting a traceroute measurement ID.
     Returning a Data Frame containing all measurements for this ID.
@@ -418,7 +418,7 @@ def traceMeasureToDataFrame(measurement_id, file_dict):
     # printJSON(trace)
     # involved_probes = filterJsonList(trace, "prb_id")
     # print(involved_probes)
-    data = extractTraceMeasureInformation(traceroute, file_dict)
+    data = extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
     # data.to_csv(f"measurements/traceroute/trace_{measurement_id}.csv", index=False)
 
     return data
@@ -434,9 +434,9 @@ def rawTraceMeasurementsToCsv(id_list, csv):
 
     df = None
     # id_list = id_list[0:1]
-    with tqdm(total=len(id_list), desc="Fetching TRACES") as pbar:
+    with tqdm(total=len(id_list), position=0, leave=False, desc="Overall") as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=46) as executor:
-            future_to_df = {executor.submit(traceMeasureToDataFrame, id, file_dict): id for id in id_list}
+            future_to_df = {executor.submit(traceMeasureToDataFrame, id, index + 1, file_dict): id for index,id in enumerate(id_list)}
             
             for future in concurrent.futures.as_completed(future_to_df):
                 id = future_to_df[future]
