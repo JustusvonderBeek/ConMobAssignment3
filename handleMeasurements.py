@@ -5,6 +5,7 @@ import concurrent.futures
 import ast
 import socket
 import ipaddress
+import statistics
 import pandas as pd
 
 from argparse import ArgumentParser
@@ -83,8 +84,8 @@ def openAuxiliaryFiles():
     wifi_ids = filterJsonList(wifi_probes["objects"], "id")
 
     # Load the list of IP to ASNs and add the IPSubnetMask
-    ip_to_asn = pd.read_csv("measurements/traceroute/ip2asn-v4.tsv", sep="\t",)
-    ip_to_asn.columns = ["Start", "End", "ASN", "Country", "Company"]
+    # ip_to_asn = pd.read_csv("measurements/traceroute/ip2asn-v4.tsv", sep="\t",)
+    # ip_to_asn.columns = ["Start", "End", "ASN", "Country", "Company"]
 
 
     file_dict = {
@@ -104,7 +105,7 @@ def openAuxiliaryFiles():
         "OC": ast.literal_eval(list(continent.loc[continent["Continent"] == "OC"]["IDs"])[0]),
         "ME": ast.literal_eval(list(continent.loc[continent["Continent"] == "ME"]["IDs"])[0]),
         "datacenters": datacenters,
-        "ip2asn": ip_to_asn,
+        # "ip2asn": ip_to_asn,
     }
 
     return file_dict
@@ -315,10 +316,10 @@ def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
     """
 
     involved_probes = filterJsonList(traceroute, "prb_id")
-    columns = ["Probe ID", "Technology", "Prb Country", "Prb Continent", "Datacenter IP", "Datacenter Company", "Datacenter Continent", "Hopcount", "IP", "ASN", "ASN Company"]
+    columns = ["Probe ID", "Technology", "Prb Country", "Prb Continent", "Datacenter IP", "Datacenter Company", "Datacenter Continent", "Hopcount", "Latency Avg", "IP", "ASN", "ASN Company"]
     data = pd.DataFrame(columns=columns)
     # traceroute = traceroute[:10]
-    ip2asn = file_dict["ip2asn"]
+    # ip2asn = file_dict["ip2asn"]
 
     # print(f"Length of JSON: {len(traceroute)}")
 
@@ -332,6 +333,8 @@ def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
         ips = list()
         asn = list()
         asn_comp = list()
+        lat = list()
+        last_lat = 0
         hopcount = 0
         for hop in trace["result"]:
             hopcount += 1
@@ -343,9 +346,17 @@ def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
             ip_set = set()
             asn_set = set()
             owner_set = set()
+            curr_avg = list()
             for h in hop["result"]:
                 if "from" in h.keys():
                     ip_set.add(h["from"])
+                if "rtt" in h.keys():
+                    curr_avg.append(h["rtt"])
+
+            avg = last_lat
+            if len(curr_avg) > 0:
+                avg = statistics.mean(curr_avg)
+                last_lat = avg
 
             # for elem in ip_set:
             #     print(f"Elem: {elem}")
@@ -368,6 +379,7 @@ def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
             ips.extend(list(ip_set))
             asn.extend(list(asn_set))
             asn_comp.extend(list(owner_set))
+            lat.append(avg)
 
         # print(f"IPs: {ips}")
         # print(f"ASNs: {asn}")
@@ -375,13 +387,13 @@ def extractTraceMeasureInformation(traceroute, measurement_id, index, file_dict)
 
         technology, location, country, continent, dc_comp, dc_continent = addMeasureInformation(probe_id, trace["dst_addr"], file_dict)
 
-        information = {"Probe ID": probe_id, "Technology": technology, "Prb Country": country, "Prb Continent": continent, "Datacenter IP": trace["dst_addr"], "Datacenter Company": dc_comp, "Datacenter Continent": dc_continent, "Hopcount": hopcount, "IP": [ips], "ASN": [asn], "ASN Company": [asn_comp]}
+        information = {"Probe ID": probe_id, "Technology": technology, "Prb Country": country, "Prb Continent": continent, "Datacenter IP": trace["dst_addr"], "Datacenter Company": dc_comp, "Datacenter Continent": dc_continent, "Hopcount": hopcount, "Latency Avg": [lat], "IP": [ips], "ASN": [asn], "ASN Company": [asn_comp]}
 
         # data = pd.concat([pd.DataFrame(information), data], ignore_index=True)
 
         return pd.DataFrame(information)
 
-    with tqdm(total=len(traceroute), position=index, leave=False, desc=f"TRACE {measurement_id}") as pbar:
+    with tqdm(total=len(traceroute), position=index, leave=True, desc=f"TRACE {measurement_id}") as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
             future_to_df = {executor.submit(inner_loop, trace): trace for trace in traceroute}
             
@@ -410,10 +422,13 @@ def traceMeasureToDataFrame(measurement_id, index, file_dict):
     tqdm.write(f"Fetching TRACEROUTE measurements for {measurement_id}...")
     # This can take quite some time (timeout, if none is given the request will not timeout)
     # See: https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
-    traceroute = requests.get(id_url, timeout=default_timeout)
-    traceroute = traceroute.json()
-    with open(f"measurements/traceroute/first_traces/trace_{measurement_id}.json", "w") as output:
-        json.dump(traceroute, output, indent=2)
+    # traceroute = requests.get(id_url, timeout=default_timeout)
+    with open(f"measurements/traceroute/first_traces/trace_{measurement_id}.json") as json_file:
+        traceroute = json.load(json_file)
+    
+    # traceroute = traceroute.json()
+    # with open(f"measurements/traceroute/first_traces/trace_{measurement_id}.json", "w") as output:
+    #     json.dump(traceroute, output, indent=2)
         # print("Wrote intermediate JSON to 'measurements/traceroute/tmp.json'")
     # printJSON(trace)
     # involved_probes = filterJsonList(trace, "prb_id")
@@ -434,7 +449,7 @@ def rawTraceMeasurementsToCsv(id_list, csv):
 
     df = None
     # id_list = id_list[0:1]
-    with tqdm(total=len(id_list), position=0, leave=False, desc="Overall") as pbar:
+    with tqdm(total=len(id_list), position=0, leave=True, desc="Overall") as pbar:
         with concurrent.futures.ThreadPoolExecutor(max_workers=46) as executor:
             future_to_df = {executor.submit(traceMeasureToDataFrame, id, index + 1, file_dict): id for index,id in enumerate(id_list)}
             
