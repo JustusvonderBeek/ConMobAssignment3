@@ -9,7 +9,7 @@ check non participating probes
 check offline nodes?  
 
 
-## 2.
+## 2. Analyze connectivity of wireless vs wired networks globally
 
 ### 2 a) Are there significant latency differences between probes using different access technologies i.e. wired vs WiFi vs LTE vs Starlink?
 - generate node matchings (and save them to a file or smth)
@@ -70,7 +70,7 @@ check offline nodes?
 - plot as pie chart (one per continent)
 
   
-- node_id,node_continent,datacenter_ip,datacenter_company,datacenter_continent,[IPs],[ASNs],[ASN_company]
+- node_id,node_continent,technology,datacenter_ip,datacenter_company,datacenter_continent,[IPs],[ASNs],[ASN_company]
 - resolve ips to asns
   - if multiple ips per hop => check asns
   - if asns equal => just add once to ASN list
