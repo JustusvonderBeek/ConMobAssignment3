@@ -602,79 +602,65 @@ def plotLatencyDifferences(inputs):
 
     exportToPdf(fig, f"results/ping/{technology_lower}_lan_count.pdf", width=8, height=6)
 
-def plotTraceroutePiechart(input, output):
+def plotTracerouteBarplot(input, output):
     """
     Expecting the traceroute data file location and the output location.
     Plotting the path as Piechart and storing the result at the output location.
     """
 
     data = pd.read_csv(input, index_col=None, na_filter=False)
-
     data = data.loc[data["Prb Continent"] == data["Datacenter Continent"]]
-    data = data.loc[data["Prb Continent"] == "EU"]
-    data = data.loc[data["Datacenter Company"] == "AMAZON"]
 
-    # print(f"{data.to_markdown()}")
-    # exit(1)
+    datacenters = ["GOOGLE", "AMAZON", "MICROSOFT"]
+    # continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
+    continents = ["EU", "NA"]
 
-    asn_list = list()
-    comp_list = list()
-    for index,row in data.iterrows():
-        # print(row)
-        # print(row["ASN"])
-        asn_list.extend(ast.literal_eval(row["ASN"]))
-        comp_list.extend(ast.literal_eval(row["ASN Company"]))
+    for continent in tqdm(continents, desc="Plotting Continents"):
+        for datacenter in datacenters:
+            iter_data = data.loc[data["Prb Continent"] == continent]
+            iter_data = iter_data.loc[iter_data["Datacenter Company"] == datacenter]
+            # print(iter_data.to_markdown())
 
+            asn_list = list()
+            comp_list = list()
+            for index,row in iter_data.iterrows():
+                asn_list.extend(ast.literal_eval(row["ASN"]))
+                comp_list.extend(ast.literal_eval(row["ASN Company"]))
 
-    # print(asn_list)
-    # asn_list = [ x for x in asn_list if x != "NA"]
-    # print(comp_list)
-    dataframe = pd.DataFrame({"ASN":asn_list, "Organization":comp_list, "Occurrence":np.ones(len(asn_list))})
-    dataframe = dataframe.value_counts(subset=["Organization"], sort=True).rename_axis('Organization').to_frame('Occurrence').reset_index(level=0, inplace=False)
-    # dataframe = dataframe.value_counts(subset=["ASN"], sort=True).rename_axis('ASN').to_frame('Occurrence').reset_index(level=0, inplace=False)
+            dataframe = pd.DataFrame({"ASN":asn_list, "Organization":comp_list, "Occurrence":np.ones(len(asn_list))})
+            dataframe = dataframe.value_counts(subset=["Organization"], sort=True).rename_axis('Organization').to_frame('Occurrence').reset_index(level=0, inplace=False)
 
-    dataframe.loc[:,"Organization"] = dataframe["Organization"].apply(lambda x: re.findall("[A-Z0-9\-]+", x)[0])
-    df_draw = dataframe.copy()
-    df_draw.loc[df_draw['Occurrence'] < 10, 'Organization'] = 'Other (< 10 Occurrences)'
-    df_draw.loc[df_draw["Organization"] == "NA","Organization"] = "Local IPs / Not Responding"
-    dataframe = df_draw.groupby('Organization')['Occurrence'].sum().reset_index()
-    # print(dataframe)
-    # dataframe = dataframe.loc[dataframe["Occurence"] > 10]
-    # dataframe = pd.DataFrame(dataframe)
-    # v = dataframe.ASN.value_counts()
-    # dataframe = dataframe[dataframe.ASN.isin(v.index[v.gt(12)])]
-    dataframe = dataframe.sort_values(by="Occurrence", ascending=False)
-    dataframe.to_csv("measurements/traceroute/piechart.csv", index=None)
-    # exit(1)
+            dataframe.loc[:,"Organization"] = dataframe["Organization"].apply(lambda x: re.findall("[A-Z0-9\-]+", x)[0])
+            df_draw = dataframe.copy()
+            df_draw.loc[df_draw['Occurrence'] < 10, 'Organization'] = 'Other (< 10 Occurrences)'
+            df_draw.loc[df_draw["Organization"] == "NA","Organization"] = "Local IPs / Not Responding"
+            dataframe = df_draw.groupby('Organization')['Occurrence'].sum().reset_index()
+            
+            dataframe = dataframe.sort_values(by="Occurrence", ascending=False)
+            # dataframe.to_csv("measurements/traceroute/piechart.csv", index=None)
 
-    # pie = dataframe.groupby(['ASN']).count().plot(kind='pie', y="Occurence", labeldistance=None, rotatelabels=True, autopct="%1.1f%%", pctdistance=1.3)
-    # plt.pie(data=dataframe, x="Occurence", labels=dataframe["ASN"])
-    # pie = dataframe.plot(kind="pie", y="Occurrence", startangle=10, labels=dataframe["Organization"], autopct="%1.1f%%", pctdistance=1.2, labeldistance=1.35)
-    fig, ax = plt.subplots()
-    sns.barplot(data=dataframe, x="Occurrence", y="Organization")
-    # pie = dataframe.groupby(["ASN"]).count().plot(kind="pie", y="Occurence")
-    # , autopct='%1.0f%%'
-    # plt.legend(title="ASN", loc="upper left", bbox_to_anchor=(1.2, 1))
-    # fig = pie.get_figure()
-    # pie.set_ylabel("Occurrence of ASN")
-    # # plt.pie(asn_list)
+            # print(f"{dataframe.to_markdown()}")
 
-    # Styling the plot
-    def log2_base(y, pos):
-        return r"${{ {:d} }}$".format(int(y))
-    # ax.yaxis.get_ticklocs(minor=True)
-    ax.set_xscale("log")
-    ax.xaxis.set_major_formatter(FuncFormatter(log2_base))
-    ax.minorticks_on()
-    ax.set_axisbelow(True)
-    ax.grid(visible=True, which="major", axis="x")
-    ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="x")
-    plt.tick_params(axis='y', which='minor', left=False, bottom=False, top=False, labelbottom=False)
+            fig, ax = plt.subplots()
+            sns.barplot(data=dataframe, x="Occurrence", y="Organization", palette="cool")
 
-    # # plt.pie(data["ASN Company"])
-    # plt.show()
+            # Styling the plot
+            def log2_base(y, pos):
+                return r"${{ {:d} }}$".format(int(y))
+            ax.set_xscale("log")
+            ax.xaxis.set_major_formatter(FuncFormatter(log2_base))
+            ax.minorticks_on()
+            ax.set_axisbelow(True)
+            ax.set_xlim(xmin=1)
+            ax.set_ylabel("Organization / ASN")
+            ax.grid(visible=True, which="major", axis="x")
+            ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="x")
+            plt.tick_params(axis='y', which='minor', left=False, bottom=False, top=False, labelbottom=False)
+            plt.title(f"{continent} Intra-Continental ASN Occurrence on Path to {datacenter} Datacenter")
 
-    exportToPdf(fig, "results/trace/asn.pdf", width=10, height=6)
+            # plt.show()
+
+            exportToPdf(fig, f"{output}asn_{continent}_{datacenter}.pdf", width=8, height=6)
 
 # --------------------------------------------------------------------------
 # PLOTTING THE MAPS
@@ -760,4 +746,4 @@ if __name__ == '__main__':
     # plotDatacenterLocationMap(args.input)
 
     # Plotting the traceroute
-    plotTraceroutePiechart("measurements/traceroute/trace.csv", "results/traceroute/pie.pdf")
+    plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
