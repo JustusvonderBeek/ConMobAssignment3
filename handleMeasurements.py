@@ -4,6 +4,7 @@ import os
 import concurrent.futures
 import ast
 import socket
+import ipaddress
 import pandas as pd
 
 from argparse import ArgumentParser
@@ -26,7 +27,7 @@ ping_prefix = "measurements/ping"
 trace_prefix = "measurements/traceroute"
 
 # TImeout in seconds
-default_timeout = 10
+default_timeout = 20
 
 # --------------------------------------------------------------------------
 # AUXILIARY FUNCTIONS
@@ -81,6 +82,11 @@ def openAuxiliaryFiles():
     sat_ids = filterJsonList(sat_probes["objects"], "id")
     wifi_ids = filterJsonList(wifi_probes["objects"], "id")
 
+    # Load the list of IP to ASNs and add the IPSubnetMask
+    ip_to_asn = pd.read_csv("measurements/traceroute/ip2asn-v4.tsv", sep="\t",)
+    ip_to_asn.columns = ["Start", "End", "ASN", "Country", "Company"]
+
+
     file_dict = {
         "lan_prbs": lan_probes,
         "cell_prbs": cell_probes,
@@ -98,6 +104,7 @@ def openAuxiliaryFiles():
         "OC": ast.literal_eval(list(continent.loc[continent["Continent"] == "OC"]["IDs"])[0]),
         "ME": ast.literal_eval(list(continent.loc[continent["Continent"] == "ME"]["IDs"])[0]),
         "datacenters": datacenters,
+        "ip2asn": ip_to_asn,
     }
 
     return file_dict
@@ -140,7 +147,7 @@ def listMeasurements():
 # PING MEASUREMENT
 # --------------------------------------------------------------------------
 
-def addPingInformation(id, dst, file_dict):
+def addMeasureInformation(id, dst, file_dict):
     """
     Expecting a single measurement probe and the destination IP.
     Returning Technology, Probe Location, Probe Country, Probe Continent, DC Company, DC Continent
@@ -166,6 +173,7 @@ def addPingInformation(id, dst, file_dict):
         probe = filterProbe(file_dict["lan_prbs"]["objects"])
 
     # Extracting probe location information
+    # print(f"ID: {id}")
     loc = (probe["latitude"], probe["longitude"])
     country = probe["country_code"]
 
@@ -215,7 +223,7 @@ def extractPingMeasureInformation(input_json, id_list, measure_id, file_dict):
 
     for id in id_list:
         id_measures = [elem for elem in input_json if elem["prb_id"] == id]
-        technology, location, country, continent, dc, dc_continent = addPingInformation(id, id_measures[0]["dst_addr"], file_dict)
+        technology, location, country, continent, dc, dc_continent = addMeasureInformation(id, id_measures[0]["dst_addr"], file_dict)
         # printJSON(id_measures)
 
         datapoints = list()
@@ -307,61 +315,111 @@ def extractTraceMeasureInformation(traceroute, file_dict):
     """
 
     involved_probes = filterJsonList(traceroute, "prb_id")
-    columns = ["Probe ID", "Prb Continent", "Datacenter IP", "Datacenter Company", "Datacenter Continent", "IP", "ASN", "ASN Company"]
+    columns = ["Probe ID", "Technology", "Prb Country", "Prb Continent", "Datacenter IP", "Datacenter Company", "Datacenter Continent", "Hopcount", "IP", "ASN", "ASN Company"]
+    data = pd.DataFrame(columns=columns)
+    # traceroute = traceroute[:10]
+    ip2asn = file_dict["ip2asn"]
 
-    print(f"Length of JSON: {len(traceroute)}")
+    # print(f"Length of JSON: {len(traceroute)}")
 
-    c = Client()
-    for trace in traceroute:
+    df = None
+    # for trace in tqdm(traceroute):
+    # for trace in traceroute:
+    def inner_loop(trace):
+        c = Client()
         # For each IP address that we find in the measurement
+        probe_id = trace["prb_id"]
         ips = list()
         asn = list()
         asn_comp = list()
+        hopcount = 0
         for hop in trace["result"]:
+            hopcount += 1
             # Check if we got a response from the hop
-            if "x" in hop["result"][0].keys():
-                print(f"Hop {hop['hop']} did not contain information")
-                continue
+            # if "x" in hop["result"][0].keys():
+            #     print(f"Hop {hop['hop']} did not contain information")
+            #     continue
             # Resolve IP to ASN number and ASN Owner
-            ip = hop["result"][0]["from"]
-            resp = c.lookup(ip)
-            ips.append(ip)
-            asn.append(resp.asn)
-            asn_comp.append(resp.owner)
+            ip_set = set()
+            asn_set = set()
+            owner_set = set()
+            for h in hop["result"]:
+                if "from" in h.keys():
+                    ip_set.add(h["from"])
 
-        print(f"IPs: {ip}")
-        print(f"ASNs: {asn}")
-        print(f"ASN-Companies: {asn_comp}")
+            # for elem in ip_set:
+            #     print(f"Elem: {elem}")
+            #     ip_int = int(ipaddress.IPv4Address(elem))
+            #     bigger_rows = ip2asn.loc[ip2asn["Start"].apply(lambda x: int(ipaddress.IPv4Address(x)) >= ip_int)]
+            #     row = bigger_rows.loc[ip2asn["End"].apply(lambda x: int(ipaddress.IPv4Address(x)) <= ip_int)]
+            #     if len(row) > 1:
+            #         print(f"Oh oh! You matched more than one ASN to the IP: {elem}! What a pitty")
+            #         exit(1)
+            #     print(f"Matching: {row.to_markdown()}")
+            #     asn_set.add(int(row["ASN"]))
+            #     owner_set.add(row["Company"])
+            
+            # The old but slow solution
+            for elem in ip_set:
+                resp = c.lookup(elem)
+                asn_set.add(resp.asn)
+                owner_set.add(resp.owner)
+            
+            ips.extend(list(ip_set))
+            asn.extend(list(asn_set))
+            asn_comp.extend(list(owner_set))
 
-        exit(1)
-    # domain = "google.de"
-    # ip = socket.gethostbyname(domain)
-    # r = c.lookup(ip)
-    # print(f"Owner: '{r.owner}' - {r.asn}")
+        # print(f"IPs: {ips}")
+        # print(f"ASNs: {asn}")
+        # print(f"ASN-Companies: {asn_comp}")
+
+        technology, location, country, continent, dc_comp, dc_continent = addMeasureInformation(probe_id, trace["dst_addr"], file_dict)
+
+        information = {"Probe ID": probe_id, "Technology": technology, "Prb Country": country, "Prb Continent": continent, "Datacenter IP": trace["dst_addr"], "Datacenter Company": dc_comp, "Datacenter Continent": dc_continent, "Hopcount": hopcount, "IP": [ips], "ASN": [asn], "ASN Company": [asn_comp]}
+
+        # data = pd.concat([pd.DataFrame(information), data], ignore_index=True)
+
+        return pd.DataFrame(information)
 
 
-    return None
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        future_to_df = {executor.submit(inner_loop, trace): trace for trace in traceroute}
+        
+        for future in concurrent.futures.as_completed(future_to_df):
+            id = future_to_df[future]
+            try:
+                dataframe = future.result()
+            except Exception as exc:
+                print(f"ID {id} generated exception: {exc}")
+            else:
+                df = pd.concat([dataframe, df], ignore_index=True)
+                # pbar.update(1)
 
-def traceMeasureToDataFrame(id, file_dict):
+    # print(f"{data.to_markdown()}")
+
+    return df
+
+def traceMeasureToDataFrame(measurement_id, file_dict):
     """
     Expecting a traceroute measurement ID.
     Returning a Data Frame containing all measurements for this ID.
     """
 
     access_url = base_url + "measurements/"
-    id_url = access_url + str(id) + "/results/"
-    tqdm.write(f"Fetching TRACEROUTE measurements for {id}...")
+    id_url = access_url + str(measurement_id) + "/results/"
+    tqdm.write(f"Fetching TRACEROUTE measurements for {measurement_id}...")
     # This can take quite some time (timeout, if none is given the request will not timeout)
     # See: https://requests.readthedocs.io/en/latest/user/quickstart/#timeouts
     traceroute = requests.get(id_url, timeout=default_timeout)
     traceroute = traceroute.json()
-    with open("measurements/traceroute/tmp.json", "w") as output:
+    with open(f"measurements/traceroute/first_traces/trace_{measurement_id}.json", "w") as output:
         json.dump(traceroute, output, indent=2)
-        print("Wrote intermediate JSON to 'measurements/traceroute/tmp.json'")
+        # print("Wrote intermediate JSON to 'measurements/traceroute/tmp.json'")
     # printJSON(trace)
     # involved_probes = filterJsonList(trace, "prb_id")
     # print(involved_probes)
     data = extractTraceMeasureInformation(traceroute, file_dict)
+    # data.to_csv(f"measurements/traceroute/trace_{measurement_id}.csv", index=False)
 
     return data
 
@@ -372,10 +430,23 @@ def rawTraceMeasurementsToCsv(id_list, csv):
     Fetching the measurement information and storing the measurement in the given CSV file.
     """
 
+    file_dict = openAuxiliaryFiles()
+
     df = None
-    id_list = id_list[0:1]
-    for id in id_list:
-        traceMeasureToDataFrame(id, None)
+    # id_list = id_list[0:1]
+    with tqdm(total=len(id_list), desc="Fetching TRACES") as pbar:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=46) as executor:
+            future_to_df = {executor.submit(traceMeasureToDataFrame, id, file_dict): id for id in id_list}
+            
+            for future in concurrent.futures.as_completed(future_to_df):
+                id = future_to_df[future]
+                try:
+                    dataframe = future.result()
+                except Exception as exc:
+                    print(f"ID {id} generated exception: {exc}")
+                else:
+                    df = pd.concat([dataframe, df], ignore_index=True)
+                    pbar.update(1)
 
     df.to_csv(csv, index=False)
     print(f"Saved traceroute measurement output to '{csv}'")
@@ -405,4 +476,4 @@ if __name__ == '__main__':
         # ping_data = rawPingMeasureToCsv(ping_ids, args.output)
 
         # TODO: Fetch traceroute measurements
-        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/trace/trace.csv")
+        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/traceroute/trace.csv")
