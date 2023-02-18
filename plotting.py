@@ -2,6 +2,7 @@ import os
 import re
 import time
 import datetime
+import statistics
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -666,6 +667,104 @@ def plotTracerouteBarplot(input, output):
 
             exportToPdf(fig, f"{output}asn_{continent}_{datacenter}.pdf", width=8, height=6)
 
+def plotTraceCDF(input, output):
+    """
+    Expecting the path to the traceroute CSV.
+    Reading the file and extracting the average latency.
+    Plotting a CDF for this latency and saving to the location given under output.
+    """
+
+    org_data = pd.read_csv(input, index_col=None, na_filter=False)
+
+    technologies = ["LAN", "SATELLITE", "CELLULAR"]
+    technologies = technologies[:2]
+    continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
+    continents = continents[:2] # Only plot until NA for now
+
+    continent_matching = defaultdict(list)
+    continent_matching["EU"]=["EU","NA", "AF", "AS", "ME"]
+    continent_matching["NA"]=["NA","EU", "SA", "AS", "OC"]
+    continent_matching["SA"]=["NA", "AF", "AS", "OC"]
+    continent_matching["AF"]=["EU", "SA", "ME"]
+    continent_matching["AS"]=["EU", "NA", "SA", "OC"]
+    continent_matching["ME"]=["EU", "AF", "OC"]
+    continent_matching["OC"]=["NA", "SA", "ME", "AS"]
+
+    df = None
+    for continent in tqdm(continents, desc="Plotting Continents"):
+        source = continent
+        for dest in continent_matching[continent][:2]:
+            # Select the first match for now
+            # dest = continent_matching[continent][0]
+            for technology in technologies:
+                # technology = "LAN"
+
+                # data = data.loc[data["Prb Continent"] != data["Datacenter Continent"]]
+                data = org_data.loc[org_data["Prb Continent"] == source]
+                data = data.loc[data["Datacenter Continent"] == dest]
+                # We only pinged a single datacenter, so filtering for this is not necessary
+                # data = data.loc[data["Datacenter Company"] == "AMAZON"]
+                # print(f"{data.to_markdown()}")
+
+                data = data.loc[data["Technology"] == technology]
+                # print(len(data))
+
+                latencies = list()
+                for row in data.iterrows():
+                    row = row[1]
+                    lat = ast.literal_eval(row["Latency Avg"])
+                    # for elem in lat:
+                        # elem *= 1e3
+                        # latencies.append(elem)        
+                    latencies.extend(lat)
+
+                # print(min(latencies))
+                source_col = [source] * len(latencies)
+                dest_col = [dest] * len(latencies)
+                tech_col = [technology] * len(latencies)
+            
+                df = pd.concat([df, pd.DataFrame({"Source": source_col, "Destination":dest_col, "Technology":tech_col, "Latency":latencies})], ignore_index=True)
+
+    print(f"{df.to_markdown()}")
+    # print(latencies)
+    fig, ax = plt.subplots()
+    # sns.kdeplot(data=latencies, cumulative=True, label=f"Test")
+    # plt.hist(latencies, density=True, bins=len(latencies), cumulative=True, label='CDF', histtype='step', alpha=0.8, color='k')
+    # sns.histplot(latencies, stat="count", cumulative=True)
+    # plt_data = df.loc[df["Technology"] == "SATELLITE"]
+    plt_data = df.copy()
+    # plt_data = plt_data.loc[plt_data["Source"] == "NA"]
+    # plt_data = plt_data.loc[plt_data["Destination"] == "EU"]
+    sns.ecdfplot(data=plt_data, x="Latency", hue=plt_data[['Technology', 'Source', 'Destination']].apply(tuple, axis=1))
+    upper_limit = statistics.stdev(plt_data["Latency"])
+    # print(upper_limit)
+    # plt_data = df.copy()
+    # plt_data = plt_data.loc[plt_data["Source"] == "EU"]
+    # plt_data = plt_data.loc[plt_data["Destination"] == "EU"]
+    # sns.ecdfplot(data=plt_data, x="Latency", log_scale=False, hue="Technology")
+    # upper_limit = max(upper_limit, statistics.stdev(plt_data["Latency"]))
+
+    # plt_data = df.loc[df["Technology"] == "LAN"]
+    # sns.ecdfplot(data=plt_data, x="Latency", log_scale=False, label="Lan")
+    # n_upper_limit = statistics.stdev(plt_data["Latency"])
+    # upper_limit = max(upper_limit, n_upper_limit)
+
+    # Styling the plot
+    # ax.set_xscale("log")
+    ax.set_xlim(xmin=-5, xmax=2.6 * upper_limit)
+    ax.minorticks_on()
+    ax.set_axisbelow(True)
+    ax.grid(visible=True, which="major", axis="both")
+    ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="both")
+    # plt.tick_params(axis='y', which='minor', left=False, bottom=False, top=False, labelbottom=False)
+    ax.set_ylabel("CDF")
+    ax.set_xlabel("RTT [ms]") 
+    plt.title(f"Latency CDF from {source} to {dest} with {technology}")
+    # plt.show()
+
+    exportToPdf(fig, f"{output}cdf_{source.lower()}_{dest.lower()}_{technology.lower()}.pdf")
+
+
 # --------------------------------------------------------------------------
 # PLOTTING THE MAPS
 # --------------------------------------------------------------------------
@@ -750,4 +849,5 @@ if __name__ == '__main__':
     # plotDatacenterLocationMap(args.input)
 
     # Plotting the traceroute
-    plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
+    # plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
+    plotTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
