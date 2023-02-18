@@ -630,6 +630,10 @@ def plotTracerouteBarplot(input, output):
             dataframe = pd.DataFrame({"ASN":asn_list, "Organization":comp_list, "Occurrence":np.ones(len(asn_list))})
             dataframe = dataframe.value_counts(subset=["Organization"], sort=True).rename_axis('Organization').to_frame('Occurrence').reset_index(level=0, inplace=False)
 
+            # print(f"{dataframe.to_markdown()}")
+            dataframe.to_csv(f"measurements/traceroute/asn_occ_{continent.lower()}_{datacenter.lower()}.csv", index=None)
+            # exit(1)
+
             dataframe.loc[:,"Organization"] = dataframe["Organization"].apply(lambda x: re.findall("[A-Z0-9\-]+", x)[0])
             df_draw = dataframe.copy()
             df_draw.loc[df_draw['Occurrence'] < 10, 'Organization'] = 'Other (< 10 Occurrences)'
