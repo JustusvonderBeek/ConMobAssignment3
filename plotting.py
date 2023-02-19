@@ -3,6 +3,7 @@ import re
 import time
 import datetime
 import statistics
+import string
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -39,6 +40,19 @@ def exportToPdf(fig, filename, width=8, height=6):
 
     fig.savefig(filename, bbox_inches='tight', format='pdf')
     print(f"Wrote output to '{filename}'")
+
+def filterJsonList(input_json, field):
+    """
+    Expecting a json object containing a list.
+    Filtering the json list and returning the values of the given field.
+    """
+
+    output = set()
+    for elem in input_json:
+        if field in elem.keys():
+            output.add(elem[field])
+
+    return list(output)
 
 # --------------------------------------------------------------------------
 # DATA HANDLING
@@ -77,6 +91,21 @@ def extractGeolocation(inputs, location_file):
     Returning a list of Points of Geolocations.
     """
 
+    # Extract the technology of the probe
+    with open("probes/lan.json", "r") as lan:
+        lan_probes = json.load(lan)
+    with open("probes/cellular.json", "r") as cellular:
+        cell_probes = json.load(cellular)
+    with open("probes/satellite.json", "r") as sat:
+        sat_probes = json.load(sat)
+    with open("probes/wifi.json", "r") as wifi:
+        wifi_probes = json.load(wifi)
+
+    lan_ids = filterJsonList(lan_probes["objects"], "id")
+    cell_ids = filterJsonList(cell_probes["objects"], "id")
+    sat_ids = filterJsonList(sat_probes["objects"], "id")
+    wifi_ids = filterJsonList(wifi_probes["objects"], "id")
+
     if type(inputs) != list:
         inputs = [inputs]
 
@@ -95,8 +124,16 @@ def extractGeolocation(inputs, location_file):
         probes = json.load(location_input)
         probes = probes["objects"]
         for id in ids:
+            if id in cell_ids:
+                technology = "CELLULAR"
+            elif id in sat_ids:
+                technology = "SATELLITE"
+            elif id in wifi_ids:
+                technology = "WIFI"
+            else:
+                technology = "LAN"
             location = next(((node["longitude"],node["latitude"]) for node in probes if node["id"] == id), "Unknown")
-            locations.append(Point(location))
+            locations.append((Point(location), technology))
 
     # print(locations)
     return locations
@@ -339,6 +376,7 @@ def plotLineplot(data, technology, ymax=200):
         filtered = tech.loc[tech["Continent"] == cont].copy()
         if len(filtered) == 0:
             continue
+        # print(f"{cont} - {technology}: {len(filtered)/3}")
         wifi = combineAroundTimepoint(filtered, interval="4h")
         sns.lineplot(data=wifi, x="Time", y="Avg", markers=True, label=f"{cont}", color=pal[cont])
 
@@ -351,11 +389,13 @@ def plotLineplot(data, technology, ymax=200):
     ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":")
     ax.set_ylim(ymin=0, ymax=ymax)
     ax.set_ylabel("RTT [ms]")
-    ax.set_xlabel("Timestamp")
-    plt.title(f"{technology} Technology")
+    ax.set_xlabel("Timestamp [UTC]")
+    if technology == "LAN":
+        technology = "Wired"
+    plt.title(f"{string.capwords(technology)} Technology")
     plt.legend(title="Continent", loc="upper left")
 
-    exportToPdf(fig, f"results/ping/{technology}_line.pdf", width=8, height=6)
+    exportToPdf(fig, f"results/ping/{technology.lower()}_line.pdf", width=12, height=6)
 
 def plotPingLatencyBoxplot(args):
     """
@@ -438,7 +478,7 @@ def plotLatencyDifferences(inputs):
     Saving to ping _lan_match.csv files.
     """
 
-    technology = "Satellite"
+    technology = "Wifi"
     technology_upper = technology.upper()
     technology_lower = technology.lower()
     data = pd.read_csv(inputs[0], na_filter=False)
@@ -575,8 +615,8 @@ def plotLatencyDifferences(inputs):
     sns.boxplot(data=out_matching, x="Continent", y="Diff", hue="Datacenter")
 
     axes.set_xlabel("Continents")
-    axes.set_ylabel(f"{technology} RTT - Lan RTT [ms]")
-    plt.title(f"RTT Difference between LAN and {technology}")
+    axes.set_ylabel(f"{technology} RTT - Wired RTT [ms]")
+    plt.title(f"RTT Difference between {technology} and Wired")
     axes.yaxis.get_ticklocs(minor=True)
     axes.minorticks_on()
     axes.set_axisbelow(True)
@@ -665,7 +705,7 @@ def plotTracerouteBarplot(input, output):
 
             # plt.show()
 
-            exportToPdf(fig, f"{output}asn_{continent}_{datacenter}.pdf", width=8, height=6)
+            exportToPdf(fig, f"{output}asn_{continent}_{datacenter}.pdf", width=10, height=6)
 
 def plotTraceCDF(input, output):
     """
@@ -678,17 +718,17 @@ def plotTraceCDF(input, output):
 
     technologies = ["LAN", "SATELLITE", "CELLULAR"]
     technologies = technologies[:2]
-    continents = ["EU", "NA", "SA", "AS", "AF", "OC", "ME"]
-    continents = continents[:2] # Only plot until NA for now
+    continents = ["EU", "NA", "AS", "OC", "AF", "SA", "ME"]
+    continents = continents[2:4] # Only plot until NA for now
 
     continent_matching = defaultdict(list)
     continent_matching["EU"]=["EU","NA", "AF", "AS", "ME"]
     continent_matching["NA"]=["NA","EU", "SA", "AS", "OC"]
+    continent_matching["AS"]=["NA","EU", "SA", "OC"]
+    continent_matching["OC"]=["NA", "SA", "ME", "AS"]
     continent_matching["SA"]=["NA", "AF", "AS", "OC"]
     continent_matching["AF"]=["EU", "SA", "ME"]
-    continent_matching["AS"]=["EU", "NA", "SA", "OC"]
     continent_matching["ME"]=["EU", "AF", "OC"]
-    continent_matching["OC"]=["NA", "SA", "ME", "AS"]
 
     df = None
     for continent in tqdm(continents, desc="Plotting Continents"):
@@ -721,11 +761,14 @@ def plotTraceCDF(input, output):
                 # print(min(latencies))
                 source_col = [source] * len(latencies)
                 dest_col = [dest] * len(latencies)
+                if technology == "LAN":
+                    technology = "Wired"
+                technology = string.capwords(technology)
                 tech_col = [technology] * len(latencies)
             
                 df = pd.concat([df, pd.DataFrame({"Source": source_col, "Destination":dest_col, "Technology":tech_col, "Latency":latencies})], ignore_index=True)
 
-    print(f"{df.to_markdown()}")
+    # print(f"{df.to_markdown()}")
     # print(latencies)
     fig, ax = plt.subplots()
     # sns.kdeplot(data=latencies, cumulative=True, label=f"Test")
@@ -735,8 +778,12 @@ def plotTraceCDF(input, output):
     plt_data = df.copy()
     # plt_data = plt_data.loc[plt_data["Source"] == "NA"]
     # plt_data = plt_data.loc[plt_data["Destination"] == "EU"]
-    sns.ecdfplot(data=plt_data, x="Latency", hue=plt_data[['Technology', 'Source', 'Destination']].apply(tuple, axis=1))
+    hue = plt_data[['Technology', 'Source', 'Destination']].apply(lambda row: f"{row.Technology}, {row.Source}, {row.Destination}", axis=1)
+    # The title of the legend
+    hue.name = "Technology, Source, Destination"
+    sns.ecdfplot(data=plt_data, x="Latency", hue=hue)
     upper_limit = statistics.stdev(plt_data["Latency"])
+    upper_limit = 150
     # print(upper_limit)
     # plt_data = df.copy()
     # plt_data = plt_data.loc[plt_data["Source"] == "EU"]
@@ -758,8 +805,8 @@ def plotTraceCDF(input, output):
     ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="both")
     # plt.tick_params(axis='y', which='minor', left=False, bottom=False, top=False, labelbottom=False)
     ax.set_ylabel("CDF")
-    ax.set_xlabel("RTT [ms]") 
-    plt.title(f"Latency CDF from {source} to {dest} with {technology}")
+    ax.set_xlabel("RTT [ms]")
+    plt.title(f"Inter-Continental vs. Intra-Continental Latency CDF")
     # plt.show()
 
     exportToPdf(fig, f"{output}cdf_{source.lower()}_{dest.lower()}_{technology.lower()}.pdf")
@@ -778,28 +825,45 @@ def plotProbeLocationMap(inputs, output):
     Extracting the latitude and longitude and plotting this data on a map.
     """
 
-    locations = extractGeolocation(inputs, "probes/connected.json")
-    with open("test.csv", "w") as test_csv:
-        test_csv.write("Longitude,Latitude\n")
-        for point in locations:
-            test_csv.write(f"{point.x},{point.y}\n")
+    locations = extractGeolocation(inputs,"probes/connected.json")
+    # with open("test.csv", "w") as test_csv:
+    #     test_csv.write("Longitude,Latitude\n")
+    #     for point in locations:
+    #         test_csv.write(f"{point.x},{point.y}\n")
     
-    df = pd.read_csv("test.csv", delimiter=",")
+    # df = pd.read_csv("test.csv", delimiter=",")
     # Remove the temporary file
-    os.remove("test.csv")
-    gdf = GeoDataFrame(df, geometry=locations)
-    # gdf = GeoDataFrame(df[:10], geometry=locations[:10])
-    # gdf2 = GeoDataFrame(df[10:20], geometry=locations[10:20])
+    # os.remove("test.csv")
+
+    # Convert the list of (long,lat,tech) into dataframe
+    df = pd.DataFrame(locations, columns=["Location","Technology"])
+    # print(df.to_markdown())
+
+    wifi = df.loc[df["Technology"] == "WIFI"]
+    wifi_probes = GeoDataFrame(wifi, geometry=wifi["Location"])
+    lan = df.loc[df["Technology"] == "LAN"]
+    lan_probes = GeoDataFrame(lan, geometry=lan["Location"])
+    sat = df.loc[df["Technology"] == "SATELLITE"]
+    sat_probes = GeoDataFrame(sat, geometry=sat["Location"])
+    cell = df.loc[df["Technology"] == "CELLULAR"]
+    cell_probes = GeoDataFrame(cell, geometry=cell["Location"])
+
+    fix, ax = plt.subplots()
 
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-    ax = gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', cmap="plasma", markersize=6, label="Test", legend=True)
-    # gdf2.plot(ax=world.plot(figsize=(10,6)), marker='o', color="green", markersize=10, label="Test", legend=True)
+    # Create the world without any points
+    base = world.plot(color="#009cf7", edgecolor="#d6d6d635", figsize=(12,6), zorder=1)
+    
+    # Now adding the different probe types on top
+    ax = lan_probes.plot(ax=base, zorder=2, marker='o', color="tab:green", markersize=5, label="Wired", legend=True)
+    ax = wifi_probes.plot(ax=base, zorder=3, marker='o', color="tab:orange", markersize=5, label="Wifi", legend=True)
+    ax = cell_probes.plot(ax=base, zorder=4, marker='o', color="tab:red", markersize=5, label="Cellular", legend=True)
+    ax = sat_probes.plot(ax=base, zorder=5, marker='o', color="tab:purple", markersize=5, label="Satellite", legend=True)
 
     # Styling (remove ticks)
     ax.set_axis_off()
-    # plt.tick_params(left = False, right = False , labelleft = False ,labelbottom = False, bottom = False)
-    # plt.show()
     # Saving to file
+    plt.legend(title="Probe Type", loc="center left")
     plt.title("Probe Spread")
     plt.savefig(output, bbox_inches='tight', format='pdf')
     print(f"Wrote output to '{output}'")
@@ -819,11 +883,15 @@ def plotDatacenterLocationMap(inputs, output="results/datacentermap.pdf"):
     
     gdf = GeoDataFrame(df, geometry=df)
 
+    fig, ax = plt.subplots()
+
     world = gpd.read_file(gpd.datasets.get_path('naturalearth_lowres'))
-    gdf.plot(ax=world.plot(figsize=(10,6)), marker='o', color="#e83b14", markersize=6, label="Test", legend=True)
+    base = world.plot(color="#009cf7", edgecolor="#d6d6d635", figsize=(12,6), zorder=1)
+    ax = gdf.plot(ax=base, zorder=2, marker='o', color="#e83b14", markersize=5, label="Test", legend=True)
 
     # Styling (remove ticks)
-    plt.tick_params(left = False, right = False , labelleft = False ,labelbottom = False, bottom = False)
+    ax.set_axis_off()
+    # plt.tick_params(left = False, right = False , labelleft = False ,labelbottom = False, bottom = False)
     # plt.show()
     # Saving to file
     plt.title("Datacenter Locations")
@@ -841,13 +909,16 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # Plotting the pings
     # plotPingLatencyBoxplot(args)
     # plotPingInterLatencyBoxplot(args)
     # plotPingLatencyLineplot(args)
     # plotLatencyDifferences(args.input)
+    
+    # Plotting the maps
     # plotProbeLocationMap(args.input, "results/probemap.pdf")
     # plotDatacenterLocationMap(args.input)
 
     # Plotting the traceroute
-    # plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
-    plotTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
+    plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
+    # plotTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
