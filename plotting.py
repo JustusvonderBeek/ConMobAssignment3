@@ -453,7 +453,7 @@ def plotPingInterLatencyBoxplot(args):
     lan = filterAccessTechnology(valid_pings, "LAN")
     plotQuadAccessTechnology(lan, "LAN", prefix="inter_")
 
-def plotPingLatencyLineplot(args):
+def plotPingLatencyLineplot(input):
     """
     Expecting the parsed command line containing input and output file information.
     Parsing the measurement results and plotting the CDF for latencies.
@@ -461,7 +461,7 @@ def plotPingLatencyLineplot(args):
 
     print('Plotting Ping Latency Lineplot')
 
-    data = pd.read_csv(args.input[0], na_filter=False)
+    data = pd.read_csv(input[0], na_filter=False)
     
     plotLineplot(data, "WIFI")
 
@@ -719,7 +719,7 @@ def plotTraceCDF(input, output):
     technologies = ["LAN", "SATELLITE", "CELLULAR"]
     technologies = technologies[:2]
     continents = ["EU", "NA", "AS", "OC", "AF", "SA", "ME"]
-    continents = continents[2:4] # Only plot until NA for now
+    continents = continents[0:2] # Only plot until NA for now
 
     continent_matching = defaultdict(list)
     continent_matching["EU"]=["EU","NA", "AF", "AS", "ME"]
@@ -733,7 +733,7 @@ def plotTraceCDF(input, output):
     df = None
     for continent in tqdm(continents, desc="Plotting Continents"):
         source = continent
-        for dest in continent_matching[continent][:2]:
+        for dest in continent_matching[continent][:3]:
             # Select the first match for now
             # dest = continent_matching[continent][0]
             for technology in technologies:
@@ -812,6 +812,83 @@ def plotTraceCDF(input, output):
     exportToPdf(fig, f"{output}cdf_{source.lower()}_{dest.lower()}_{technology.lower()}.pdf")
 
 
+def plotMobileTraceCDF(input, output):
+    """
+    Plotting CDFs for mobile clients intra-continental and inter-continental.
+    Saving output to the folder given in output.
+    """
+
+    org_data = pd.read_csv(input, index_col=None, na_filter=False)
+
+    dest = "EU"
+    org_data = org_data.loc[org_data["Datacenter Continent"] == dest]
+    
+    technologies = ["WIFI", "CELLULAR", "SATELLITE"]
+    # technologies = technologies[:2]
+    sources = ["DE", "FR", "US"]
+
+    df = None
+    for technology in technologies:
+        for source in sources:
+            data = org_data.loc[org_data["Technology"] == technology]
+            # print(f"Before {len(data)}")
+            data = data.loc[data["Prb Country"] == source]
+            # print(f"After {len(data)}")
+            # print(data.to_markdown())
+
+            latencies = list()
+            for row in data.iterrows():
+                row = row[1]
+                lat = ast.literal_eval(row["Latency Avg"])
+                # for elem in lat:
+                    # elem *= 1e3
+                    # latencies.append(elem)        
+                latencies.extend(lat)
+
+            # print(min(latencies))
+            source_col = [source] * len(latencies)
+            dest_col = [dest] * len(latencies)
+            tech = string.capwords(technology)
+            tech_col = [tech] * len(latencies)
+        
+            df = pd.concat([df, pd.DataFrame({"Source": source_col, "Destination":dest_col, "Technology":tech_col, "Latency":latencies})], ignore_index=True)
+    
+
+    # print(df.to_markdown())
+
+    fig, ax = plt.subplots()
+    plt_data = df.copy()
+    
+    # print(max(df["Latency"]))
+
+    hue = plt_data[['Technology', 'Source', 'Destination']].apply(lambda row: f"{row.Technology}, {row.Source}, DE", axis=1)
+    # The title of the legend
+    hue.name = "Technology, Source, Destination"
+    sns.ecdfplot(data=plt_data, x="Latency", hue=hue)
+    
+    # Cutting the upper limit (tail)
+    upper_limit = statistics.stdev(plt_data["Latency"])
+    upper_limit = 100
+
+    # Adding a vertical line
+    plt.axvline(30, color="#262626", linestyle="--")
+    plt.axvspan(-5,30, color="#d3d3d3B0")
+
+    # Styling the plot
+    # ax.set_xscale("log")
+    ax.set_xlim(xmin=-5, xmax=2.6 * upper_limit)
+    ax.minorticks_on()
+    ax.set_axisbelow(True)
+    ax.grid(visible=True, which="major", axis="both")
+    ax.grid(visible=True, which="minor", color="#c9c9c9", linestyle=":", axis="both")
+    # plt.tick_params(axis='y', which='minor', left=False, bottom=False, top=False, labelbottom=False)
+    ax.set_ylabel("CDF")
+    ax.set_xlabel("RTT [ms]")
+    plt.title(f"Wireless Access Technology CDF for Different Pathlengths")
+    # plt.show()
+
+    exportToPdf(fig, f"{output}cdf_wireless_to_eu.pdf")
+
 # --------------------------------------------------------------------------
 # PLOTTING THE MAPS
 # --------------------------------------------------------------------------
@@ -825,7 +902,7 @@ def plotProbeLocationMap(inputs, output):
     Extracting the latitude and longitude and plotting this data on a map.
     """
 
-    locations = extractGeolocation(inputs,"probes/connected.json")
+    locations = extractGeolocation(inputs, "probes/connected.json")
     # with open("test.csv", "w") as test_csv:
     #     test_csv.write("Longitude,Latitude\n")
     #     for point in locations:
@@ -904,21 +981,32 @@ def plotDatacenterLocationMap(inputs, output="results/datacentermap.pdf"):
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Generate CDF plots to compare the ping latency')
-    parser.add_argument('-i','--input', action="append", default=[], required=True, help="The path to the JSON file containg the latency information")
-    parser.add_argument('-o','--output', type=str, default="results/ping/pingRTT.pdf", help="The file in which the resulting plot is stored")
+    # parser.add_argument('-i','--input', action="append", default=[], required=True, help="The path to the JSON file containg the latency information")
+    # parser.add_argument('-o','--output', type=str, default="results/ping/pingRTT.pdf", help="The file in which the resulting plot is stored")
+    parser.add_argument('-p', '--ping', action="store_true", help="Plotting all PING plots")
+    parser.add_argument('-m', '--map', action="store_true", help="Plotting all MAP plots")
+    parser.add_argument('-t', '--traceroute', action="store_true", help="Plotting all TRACEROUTE plots")
+    parser.add_argument('-a', '--all', action="store_true", help="Performing all actions. Fetching all measurements, pings and traceroutes.")
 
     args = parser.parse_args()
 
     # Plotting the pings
-    # plotPingLatencyBoxplot(args)
-    # plotPingInterLatencyBoxplot(args)
-    # plotPingLatencyLineplot(args)
-    # plotLatencyDifferences(args.input)
+    if args.ping or args.all:
+        # Not used in the analysis
+        # plotPingLatencyBoxplot(args)
+        # plotPingInterLatencyBoxplot(args)
+        
+        plotPingLatencyLineplot(["measurements/ping/ping.csv"])
+        plotLatencyDifferences(["measurements/ping/ping.csv"])
     
     # Plotting the maps
-    # plotProbeLocationMap(args.input, "results/probemap.pdf")
-    # plotDatacenterLocationMap(args.input)
+    if args.map or args.all:
+        plotProbeLocationMap(["measurement_creation/continent_v4.csv"], "results/probemap.pdf")
+        plotDatacenterLocationMap(["measurement_creation/datacenters.csv"])
 
-    # Plotting the traceroute
-    plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
-    # plotTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
+    # # Plotting the traceroute
+    if args.traceroute or args.all:
+        plotTracerouteBarplot("measurements/traceroute/trace.csv", "results/trace/")
+        # Use with great care! This function needs to be adapted manually to produce other results!
+        plotTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
+        plotMobileTraceCDF("measurements/traceroute/trace.csv", "results/trace/")
