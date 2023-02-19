@@ -18,7 +18,7 @@ from cymruwhois import Client
 # --------------------------------------------------------------------------
 
 base_url = "https://atlas.ripe.net/api/v2/"
-api_key = "f9a735fa-c429-409d-b028-1050a3ee840b"
+api_key = "c5895aa0-4476-4430-91c5-fb821f0377c5"
 
 curl_measurement_template = """curl -H "Authorization: Key KEY" -X VERB URL"""
 curl_template = """curl --dump-header - -H "Content-Type: application/json" -H "Accept: application/json" -X VERB -d '{}' URL"""
@@ -121,26 +121,41 @@ def listMeasurements():
     Returns two lists, the list of all ping IDs and the list of all traceroute IDs.
     """
 
-    access_url = base_url + "measurements/ping/?description=CMB Group 9 Part 2"
-    ping = requests.get(access_url, headers={"Authorization" : "Key " + api_key})
-    ping = ping.json()
-    # print(answer)
+    ping_measurement_path = os.path.join(ping_prefix, "ping_measures.json")
+    if os.path.exists(ping_measurement_path) and not args.overwrite:
+        with open(ping_measurement_path, "r") as ping_input:
+            ping = json.load(ping_input)
+    else:
+        access_url = base_url + "measurements/ping/?description=CMB Group 9 Part 2"
+        ping = requests.get(access_url, headers={"Authorization" : "Key " + api_key})
+        ping = ping.json()
+        # print(answer)
 
-    with open(os.path.join(ping_prefix, "ping_measures.json"), "w") as output:
-        json.dump(ping, output, indent=4)
+        with open(ping_measurement_path, "w") as output:
+            print(f"Wrote ping measurement ID list to '{ping_measurement_path}'")
+            json.dump(ping, output, indent=4)
 
-    access_url = base_url + "measurements/traceroute/?description=CMB Group 9 Part 2"
-    traceroute = requests.get(access_url, headers={"Authorization" : "Key " + api_key})
-    traceroute = traceroute.json()
+    trace_measurement_path = os.path.join(trace_prefix, "traceroute_measure.json")
+    if os.path.exists(trace_measurement_path) and not args.overwrite:
+        with open(trace_measurement_path, "r") as trace_input:
+            traceroute = json.load(trace_input)
+    else:
+        access_url = base_url + "measurements/traceroute/?description=CMB Group 9 Part 2"
+        traceroute = requests.get(access_url, headers={"Authorization" : "Key " + api_key})
+        traceroute = traceroute.json()
 
-    with open(os.path.join(trace_prefix, "traceroute_measure.json"), "w") as output:
-        json.dump(traceroute, output, indent=4)
+        with open(trace_measurement_path, "w") as output:
+            print(f"Wrote traceroute measurement ID list to '{trace_measurement_path}'")
+            json.dump(traceroute, output, indent=4)
 
-    ping_ids = [ measure["id"] for measure in ping["results"] ]
-    traceroute_ids = [ measure["id"] for measure in traceroute["results"] ]
+    ping_ids = filterJsonList(ping["results"], "id")
+    traceroute_ids = filterJsonList(traceroute["results"], "id")
 
-    # print(f"PINGS: {json.dumps(ping_ids, indent=4)}")
-    # print(f"TRACEROUTES: {json.dumps(traceroute_ids, indent=4)}")
+    if not args.list and not args.overwrite:
+        return ping_ids, traceroute_ids
+
+    print(f"PINGS: {json.dumps(ping_ids, indent=4)}")
+    print(f"TRACEROUTES: {json.dumps(traceroute_ids, indent=4)}")
 
     return ping_ids, traceroute_ids
 
@@ -275,7 +290,7 @@ def rawPingMeasureToCsv(id_list, csv):
 
     if not args.overwrite:
         if os.path.exists(csv):
-            return pd.read_csv(csv, index_col=None)
+            return None
 
     # Opening relevant files and creating lists for adding detailed information
     # This should increase the performance because it has to be done only once
@@ -445,6 +460,10 @@ def rawTraceMeasurementsToCsv(id_list, csv):
     Fetching the measurement information and storing the measurement in the given CSV file.
     """
 
+    if not args.overwrite:
+        if os.path.exists(csv):
+            return None
+
     file_dict = openAuxiliaryFiles()
 
     df = None
@@ -476,19 +495,23 @@ def rawTraceMeasurementsToCsv(id_list, csv):
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230208.json")
-    parser.add_argument('-o', '--output', type=str, default="measurements/ping/ping.csv")
-    parser.add_argument('-l', '--list', action="store_true", help="Printing all available user measurements.")
+    parser.add_argument('-l', '--list', action="store_true", help="Printing all available user measurements and exit.")
+    parser.add_argument('-p', '--ping', action="store_true", help="Fetching all ping measurements.")
+    parser.add_argument('-t', '--traceroute', action="store_true", help="Fetching all traceroute measurements.")
+    parser.add_argument('-a', '--all', action="store_true", help="Performing all actions. Fetching all measurements, pings and traceroutes.")
     parser.add_argument('-w', '--overwrite', action="store_true", help="If existing results should be overwritten!")
-    # parser.add_argument('-m', '--matching', action="store_true", help="Matching measurement points from existing *.json files. Overwriting existing files!")
 
     global args
     args = parser.parse_args()
 
-    if args.list:
-        ping_ids, trace_ids = listMeasurements()
-        # Extract the PING CSV Table; already stores the result in the given file
-        # ping_data = rawPingMeasureToCsv(ping_ids, args.output)
+    ping_ids, trace_ids = listMeasurements()
+    
+    if args.list and not args.all:
+        # Only creating measurement listing
+        exit(0)
+        
+    if args.ping or args.all:
+        rawPingMeasureToCsv(ping_ids, "measurements/ping/ping.csv")
 
-        # TODO: Fetch traceroute measurements
-        trace_data = rawTraceMeasurementsToCsv(trace_ids, "measurements/traceroute/trace.csv")
+    if args.traceroute or args.all:
+        rawTraceMeasurementsToCsv(trace_ids, "measurements/traceroute/trace.csv")
