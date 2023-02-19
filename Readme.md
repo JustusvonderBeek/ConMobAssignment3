@@ -29,21 +29,20 @@ The `results` folder contains all plotted graphs used for the documentation and 
 
 The `main` folder of the repository contains the python scripts that were used to fetch the data from RIPE and generate plots out of this data. The `helpScript.py` is an exception, as it was only used to calculate costs and resolve datacenter URLs to IPs.
 
-## Scripts TODO:
+## Scripts
 Our results can be reproduced by executing the scripts given in the repository. The order of execution follows in general: `createMeasurements.py`, `handleMeasurements.py`, and `plotting.py`. We tried to include some comments and descriptions inside these scripts but want to cover the basic usage here as well.
 
-In order to select probes from the list of all available probes we used:
+In order to select probes from the list of all available probes we used the command below. Using the `-a` option performs all steps in order to create the script that allows to start the measurements.
 
-    python3 createMeasurements.py -i probes/20230208.json -o measurement_creation/measurement.sh
+    python3 createMeasurements.py -a
 
-This selects fitting probes from the supplied list of all available probes and write the commands to start the measurements into the given file. The second step then includes fetching the generated data from RIPE.
+This selects fitting probes from the supplied list of all available probes and write the commands to start the measurements into the given file. The second step then includes fetching the generated data from RIPE. Using the `-a` option again combines all steps.
 
-    python3 handleMeasurements.py -l -w
+    python3 handleMeasurements.py -a
 
-The third and last step is to convert the data into understandable plots. Because we generate very many different plots and kind of plots we want to list possible commands below.
+The third and last step is to convert the data into understandable plots. Again, the `-a` option allows to create all plots we used.
 
-    python3 plotting.py -i measurements/ping/ping.csv -o results/ping/plot.pdf
-    python3 plotting.py -i measurements/traceroute/trace.csv -o results/trace/trace.pdf
+    python3 plotting.py -a
 
 ## Reproducing the results
 All measurements conducted should be publicly available on RIPE. We tagged all measurements with the tag `CMB Group 9 Part 2` to allow easy filtering for these. The `Part 2` has to do with us starting wrong measurements in the beginning which were tagged only `CMB Group 9` so the obvious name was already taken. To make the fetching of data easier, we also have the JSON of all relevant measurements sorted by test type in the `measurements/ping/ping_measures.json` and `measurements/traceroute/traceroute_measure.json` files.
