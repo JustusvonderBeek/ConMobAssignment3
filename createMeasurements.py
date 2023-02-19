@@ -607,10 +607,10 @@ def getMeasurementNodes(in_file0, in_file1, technology, output):
     meassurement_points = findDoubleMatches(in_file0, in_file1)
 
     # print all points
-    counter = 0
-    for elem in meassurement_points:
-        print(f"[{counter}] {elem}")
-        counter+=1
+    # counter = 0
+    # for elem in meassurement_points:
+    #     print(f"[{counter}] {elem}")
+    #     counter+=1
 
     saveMatchingIdsToCsv([x["id0"] for x in meassurement_points], [x["id1"] for x in meassurement_points], [x["dist"] for x in meassurement_points], technology=technology, output=output)
 
@@ -789,8 +789,8 @@ def create_measurements(output_file):
     # intra-continental pings
     output.write("# Intra Continental Pings: \n")
 
-    for k,v in tqdm(continent_matching.items()):
-        print(f"Source: {k}  Dest: {k}")
+    for k,v in tqdm(continent_matching.items(), desc="Intra Pings"):
+        # print(f"Source: {k}  Dest: {k}")
         if k == "AF":
             end = 2
         else:
@@ -802,19 +802,19 @@ def create_measurements(output_file):
     # inter-continental pings
     output.write("\n\n# Inter Continental Pings: \n")
 
-    for k,v in tqdm(continent_matching.items()):
+    for k,v in tqdm(continent_matching.items(), desc="Inter Pings"):
         for dest in v:
             add_curl_command(k, dest, 0, ping_template)
 
     # Traceroute
-    print("TRACEROUTE")
+    # print("TRACEROUTE")
 
     output.write("\n\n# Traceroutes: \n")
 
     # intra-continental traceroutes
     output.write("# Intra Continental Traceroute: \n")
-    for k,v in tqdm(continent_matching.items()):
-        print(f"Source: {k}  Dest: {k}")
+    for k,v in tqdm(continent_matching.items(), desc="Intra Traceroute"):
+        # print(f"Source: {k}  Dest: {k}")
         if k == "AF":
             end = 2
         else:
@@ -826,12 +826,13 @@ def create_measurements(output_file):
     # inter-continental traceroutes
     output.write("\n\n# Inter Continental Traceroute: \n")
 
-    for k,v in tqdm(continent_matching.items()):
+    for k,v in tqdm(continent_matching.items(), desc="Inter Traceroute"):
         for dest in v:
             add_curl_command(k, dest, 0, trace_template)
 
     output.close()
 
+    print(f"Created measurement creation script in '{output_file}'")
 
 # --------------------------------------------------------------------------
 # MAIN METHOD
@@ -841,11 +842,13 @@ def create_measurements(output_file):
 if __name__ == '__main__':
 
     parser = ArgumentParser(description='Generate performance charts for throughput values from pcap file')
-    parser.add_argument('-i', '--input', type=str, default="20230208.json")
+    parser.add_argument('-i', '--input', type=str, default="probes/20230208.json")
     parser.add_argument('-o', '--output', type=str, default="connected.json")
     parser.add_argument('-t', '--tags', action="store_true", help="Printing all available user-tags and exit.")
-    parser.add_argument('-f', '--filter', action="store_true", help="Filtering node types into the given output file. Overwriting existing files!")
+    parser.add_argument('-f', '--filter', action="store_true", help="Filtering probe types into probes/<type>.json. Overwriting existing files!")
     parser.add_argument('-m', '--matching', action="store_true", help="Matching measurement points from existing *.json files. Overwriting existing files!")
+    parser.add_argument('-c', '--create', action="store_true", help="Creating the script that can be executed to schedule the measurements. Overwriting existing script!")
+    parser.add_argument('-a', '--all', action="store_true", help="Shortcut to perform all actions. Filtering, matching and creating measurement script")
     
     args = parser.parse_args()
 
@@ -853,7 +856,7 @@ if __name__ == '__main__':
         showAvailableTags(args.input)
         exit(0)
 
-    if args.filter:
+    if args.filter or args.all:
         filterConnected(args.input, "probes/connected.json")
         filterCellular("probes/connected.json", "probes/cellular.json")
         filterWiFi("probes/connected.json", "probes/wifi.json")
@@ -867,7 +870,7 @@ if __name__ == '__main__':
         filterConflictingNodes("probes/wifi.json", "probes/satellite.json")
         filterConflictingNodes("probes/cellular.json", "probes/satellite.json")
 
-    if args.matching:
+    if args.matching or args.all:
         # List of IDs that can be used for measurements
         (wifi_ids, wifi_lan_ids) = getMeasurementNodes("probes/wifi.json", "probes/lan.json", "Wifi", "measurement_creation/wifi_lan_match.csv")
         (cellular_ids, cell_lan_ids) = getMeasurementNodes("probes/cellular.json", "probes/lan.json", "Cellular", "measurement_creation/cellular_lan_match.csv")
@@ -904,7 +907,8 @@ if __name__ == '__main__':
         writeDictToFile(continent_ipv4, "measurement_creation/continent_v4.csv")
         writeDictToFile(continent_ipv6, "measurement_creation/continent_v6.csv")
 
-    create_measurements(default_measurement_script)
+    if args.create or args.all:
+        create_measurements(default_measurement_script)
 
 # --------------------------------------------------------------------------
 # END OF MAIN
